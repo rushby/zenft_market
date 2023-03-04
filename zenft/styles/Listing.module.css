@@ -83,14 +83,6 @@
     height: 80%;
 }
 
-.listing-container-large:hover,
-.listing-container-large:focus,
-.listing-container-large:active {
-    background-color: #272c34;
-    color: #0ea5e9;
-    border-color: #0ea5e9;
-}
-
 .listing-container-large h2 {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
@@ -111,6 +103,7 @@
     width: 40%;
     height: auto;
     object-fit: contain;
+    border: 1px solid #fff;
 }
 
 .listing-title-large {
@@ -128,10 +121,29 @@
 
 .listing-buy-button-large {
     display: block;
-    margin: auto;
-    margin-top: 0.5rem;
+    margin: 1rem auto auto;
     font-size: 1rem;
     padding: 1rem 2rem;
     cursor: pointer;
+    width: 40%;
 }
 
+.listing-details {
+    margin: auto;
+    border-collapse: collapse;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+.listing-details th,
+.listing-details td {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+.listing-details th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: left;
+}

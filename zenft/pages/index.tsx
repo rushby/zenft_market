@@ -34,7 +34,7 @@ const Home = () => {
                     <ConnectWallet accentColor="#f213a4" colorMode="dark" />
                 )}
                 {networkMismatch && (
-                    <button onClick={() => switchNetwork && switchNetwork(4)}>
+                    <button onClick={() => switchNetwork && switchNetwork(1662)}>
                         Switch to Goerli Network
                     </button>
                 )}
@@ -50,7 +50,13 @@ const Home = () => {
                             listings?.map((listing) => (
                                 <div
                                     key={listing.id}
-                                    onClick={() => router.push(`/listing/${listing.id}`)}
+                                    onClick={() => router.push({
+                                            pathname: `/listing/${listing.id}`,
+                                        query: {
+                                            accountData: JSON.stringify(accountData),
+                                        },
+                                        }
+                                    )}
                                     className={styles["listing-container"]}
                                 >
                                     <Link href={`/listing/${listing.id}`} passHref>

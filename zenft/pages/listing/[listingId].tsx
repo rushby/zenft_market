@@ -1,4 +1,4 @@
-import { useContract } from "@thirdweb-dev/react";
+import {useContract, useNetwork, useNetworkMismatch, useAccount, ConnectWallet} from "@thirdweb-dev/react";
 import { AuctionListing, DirectListing, ListingType } from "@thirdweb-dev/sdk";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -14,6 +14,10 @@ const ListingPage = () => {
         "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
         "marketplace"
     );
+    const networkMismatch = useNetworkMismatch();
+    const [, switchNetwork] = useNetwork();
+    const accountDataParam = router.query.accountData as string;
+    const accountData = accountDataParam ? JSON.parse(accountDataParam) : null;
 
     useEffect(() => {
         async function fetchListing() {
@@ -36,23 +40,37 @@ const ListingPage = () => {
         fetchListing();
     }, [contract, listingId]);
 
-    const createBidOrOffer = async (type: ListingType) => {
+    const createBidOrOffer = async () => {
         try {
-            if (type === ListingType.Direct) {
-                // Create an offer for a direct listing
-            } else {
-                // Create a bid for an auction listing
-            }
+            //
         } catch (error) {
             console.error(error);
         }
     };
 
-    const buyNft = async () => {
+    const buyNft = async (listingId: string, quantityDesired: number) => {
         try {
+            // Ensure user is on the correct network
+            if (networkMismatch) {
+                switchNetwork && switchNetwork(1662);
+                return;
+            }
+
+            // Connect the wallet
+            if (accountData) {
+                await accountData.connect();
+            } else {
+                // TODO: user connect metamask again.
+            }
+
             // Buy the NFT
+            await contract?.buyoutListing(listingId, quantityDesired);
+
+            // Display success message
+            alert("NFT bought successfully!");
         } catch (error) {
             console.error(error);
+            alert(error);
         }
     };
 
@@ -64,19 +82,41 @@ const ListingPage = () => {
                     <div className={styles["listing-container-large"]}>
                         <img src={listing.asset.image ?? "default-image-url"} alt={String(listing.asset.name) ?? "default-image-alt"} />
                         <h2>{listing.asset.name}</h2>
-                        <p>{listing.asset.description}</p>
-                        <p>{listing.sellerAddress}</p>
+                        <table className={styles["listing-details"]}>
+                            <tbody>
+                            <tr>
+                                <td>Price:</td>
+                                <td>{listing.buyoutCurrencyValuePerToken.displayValue}{" "}{listing.buyoutCurrencyValuePerToken.symbol}</td>
+                            </tr>
+                            <tr>
+                                <td>Asset Description:</td>
+                                <td>{listing.asset.description}</td>
+                            </tr>
+                            <tr>
+                                <td>Seller Address:</td>
+                                <td>{listing.sellerAddress}</td>
+                            </tr>
+                            <tr>
+                                <td>Listing Type:</td>
+                                <td>{listing.type === ListingType.Direct ? "Direct Listing" : "Auction Listing"}</td>
+                            </tr>
+                            </tbody>
+                        </table>
                         <p>
-                            {listing.type === ListingType.Direct
-                                ? "Direct Listing"
-                                : "Auction Listing"}
+
                         </p>
-                        <p>
-                            {listing.buyoutCurrencyValuePerToken.displayValue}{" "}
-                            {listing.buyoutCurrencyValuePerToken.symbol}
-                        </p>
-                        <button onClick={() => createBidOrOffer(listing.type)}>Bid/Buy</button>
-                        <button onClick={() => buyNft()}>Buy Now</button>
+                        <button
+                            className={styles["listing-buy-button-large"]}
+                            onClick={() => {
+                                if (listing.type === ListingType.Direct) {
+                                    buyNft(listing.id, 1);
+                                } else {
+                                    createBidOrOffer();
+                                }
+                            }}
+                        >
+                            {listing.type === ListingType.Direct ? "Buy Now" : "Bid Now"}
+                        </button>
                     </div>
                 </div>
             ) : (
