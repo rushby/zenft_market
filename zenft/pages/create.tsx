@@ -1,113 +1,134 @@
+import React, { useState } from "react";
 import {
     useContract,
-    useNetwork,
     useNetworkMismatch,
+    useNetwork,
 } from "@thirdweb-dev/react";
 import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { useRouter } from "next/router";
+import { useAccount } from "@thirdweb-dev/react";
 
 const Create = () => {
-    // Next JS Router hook to redirect to other pages
     const router = useRouter();
-
-    // Connect to our marketplace contract via the useContract hook and pass the marketplace contract address
-    const { contract } = useContract("0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6", "marketplace")
-
+    const { contract } = useContract(
+        "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
+        "marketplace"
+    );
     const networkMismatch = useNetworkMismatch();
-    const [, switchNetwork] = useNetwork();
+    const [currentNetwork] = useNetwork();
+    const [listingType, setListingType] = useState("directListing");
+    const [contractAddress, setContractAddress] = useState("");
+    const [tokenId, setTokenId] = useState("");
+    const [price, setPrice] = useState("");
+    const [account] = useAccount();
+    const { address: accountAddress } = account?.data || {};
 
-    // This function gets called when the form is submitted.
-// The user has provided:
-// - contract address
-// - token id
-// - type of listing (either auction or direct)
-// - price of the NFT
-// This function gets called when the form is submitted.
-    async function handleCreateListing(e: any) {
+    const handleCreateListing = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
         try {
-            // Ensure user is on the correct network
-            if (networkMismatch) {
-                switchNetwork && switchNetwork(4); // 4 is goerli here
-                return;
+            const currentNetworkNumber = currentNetwork.data.chain?.id;
+            if (networkMismatch || currentNetworkNumber !== 1662) {
+                return alert("Please switch to the correct network in your wallet");
             }
 
-            // Prevent page from refreshing
             e.preventDefault();
 
-            // Store the result of either the direct listing creation or the auction listing creation
+            if (!contractAddress) {
+                setContractAddressError("Contract address is required");
+                return;
+            } else {
+                setContractAddressError("");
+            }
+
+            if (!tokenId) {
+                setTokenIdError("Token ID is required");
+                return;
+            } else {
+                setTokenIdError("");
+            }
+
+            if (!price) {
+                setPriceError("Price is required");
+                return;
+            } else {
+                setPriceError("");
+            }
+
             let transactionResult = undefined;
 
-            // De-construct data from form submission
-            const { listingType, contractAddress, tokenId, price } = e.target.elements;
+            if (contract) {
+                if (listingType === "directListing") {
+                    transactionResult = await createDirectListing(
+                        contractAddress,
+                        tokenId,
+                        price
+                    );
+                }
 
-            // Depending on the type of listing selected, call the appropriate function
-            // For Direct Listings:
-            if (listingType.value === "directListing") {
-                transactionResult = await createDirectListing(
-                    contractAddress.value,
-                    tokenId.value,
-                    price.value,
-                );
+                if (listingType === "auctionListing") {
+                    transactionResult = await createAuctionListing(
+                        contractAddress,
+                        tokenId,
+                        price
+                    );
+                }
+            } else {
+                console.log("Contract object is null or undefined");
             }
 
-            // For Auction Listings:
-            if (listingType.value === "auctionListing") {
-                transactionResult = await createAuctionListing(
-                    contractAddress.value,
-                    tokenId.value,
-                    price.value,
-                );
-            }
-
-            // If the transaction succeeds, take the user back to the homepage to view their listing!
             if (transactionResult) {
                 router.push(`/`);
             }
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
-    async function createAuctionListing(
+    const createAuctionListing = async (
         contractAddress: string,
         tokenId: string,
-        price: string,
-    ) {
+        price: string
+    ) => {
         try {
             return await contract?.auction.createListing({
-                assetContractAddress: contractAddress, // Contract Address of the NFT
-                buyoutPricePerToken: price, // Maximum price, the auction will end immediately if a user pays this price.
-                currencyContractAddress: NATIVE_TOKEN_ADDRESS, // NATIVE_TOKEN_ADDRESS is the crpyto curency that is native to the network. i.e. Goerli ETH.
-                listingDurationInSeconds: 60 * 60 * 24 * 7, // When the auction will be closed and no longer accept bids (1 Week)
-                quantity: 1, // How many of the NFTs are being listed (useful for ERC 1155 tokens)
-                reservePricePerToken: 0, // Minimum price, users cannot bid below this amount
-                startTimestamp: new Date(), // When the listing will start
-                tokenId: tokenId, // Token ID of the NFT.
+                assetContractAddress: contractAddress,
+                buyoutPricePerToken: price,
+                currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+                listingDurationInSeconds: 60 * 60 * 24 * 7,
+                quantity: 1,
+                reservePricePerToken: 0,
+                startTimestamp: new Date(),
+                tokenId: tokenId,
             });
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
-    async function createDirectListing(
+    const createDirectListing = async (
         contractAddress: string,
         tokenId: string,
-        price: string,
-    ) {
+        price: string
+    ) => {
         try {
             return await contract?.direct.createListing({
-                assetContractAddress: contractAddress, // Contract Address of the NFT
-                buyoutPricePerToken: price, // Maximum price, the auction will end immediately if a user pays this price.
-                currencyContractAddress: NATIVE_TOKEN_ADDRESS, // NATIVE_TOKEN_ADDRESS is the crpyto curency that is native to the network. i.e. Goerli ETH.
-                listingDurationInSeconds: 60 * 60 * 24 * 7, // When the auction will be closed and no longer accept bids (1 Week)
-                quantity: 1, // How many of the NFTs are being listed (useful for ERC 1155 tokens)
-                startTimestamp: new Date(0), // When the listing will start
-                tokenId: tokenId, // Token ID of the NFT.
+                assetContractAddress: contractAddress,
+                buyoutPricePerToken: price,
+                currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+                listingDurationInSeconds: 60 * 60 * 24 * 7,
+                quantity: 1,
+                startTimestamp: new Date(0),
+                tokenId: tokenId,
             });
         } catch (error) {
             console.error(error);
         }
-    }
+    };
+
+    const [contractAddressError, setContractAddressError] = useState("");
+    const [tokenIdError, setTokenIdError] = useState("");
+    const [priceError, setPriceError] = useState("");
 
     return (
         <form onSubmit={(e) => handleCreateListing(e)}>
@@ -123,14 +144,23 @@ const Create = () => {
                             name="listingType"
                             id="directListing"
                             value="directListing"
-                            defaultChecked
+                            checked={listingType === "directListing"}
+                            onChange={() => setListingType("directListing")}
                         />
+                        <label htmlFor="directListing">Direct Listing</label>
                         <input
                             type="radio"
                             name="listingType"
                             id="auctionListing"
                             value="auctionListing"
+                            checked={listingType === "auctionListing"}
+                            onChange={() => setListingType("auctionListing")}
                         />
+                        <label htmlFor="auctionListing">Auction Listing</label>
+                    </div>
+                    <div>
+                        {listingType === "directListing" && <p>Selected listing type: Direct Listing</p>}
+                        {listingType === "auctionListing" && <p>Selected listing type: Auction Listing</p>}
                     </div>
 
                     {/* NFT Contract Address Field */}
@@ -138,20 +168,51 @@ const Create = () => {
                         type="text"
                         name="contractAddress"
                         placeholder="NFT Contract Address"
+                        required
+                        value={contractAddress}
+                        onChange={(e) => setContractAddress(e.target.value)}
                     />
 
                     {/* NFT Token ID Field */}
-                    <input type="text" name="tokenId" placeholder="NFT Token ID" />
+                    <input
+                        type="text"
+                        name="tokenId"
+                        placeholder="NFT Token ID"
+                        required
+                        onChange={(e) => setTokenId(e.target.value)}
+                    />
 
                     {/* Sale Price For Listing Field */}
-                    <input type="text" name="price" placeholder="Sale Price" />
+                    <input
+                        type="text"
+                        name="price"
+                        placeholder="Sale Price"
+                        required
+                        onChange={(e) => setPrice(e.target.value)}
+                    />
+
+                    {/* Display error message if a required field has not been filled */}
+                    {networkMismatch && (
+                        <p>Please switch to the correct network in your wallet</p>
+                    )}
+                    {!networkMismatch &&
+                        (!account || !accountAddress) && (
+                            <p>Please connect your wallet</p>
+                        )}
+                    {networkMismatch ||
+                        (!account || !accountAddress ||
+                            !contractAddress ||
+                            !tokenId ||
+                            !price) && (
+                            <p>Please fill in all required fields</p>
+                        )
+                    }
 
                     <button type="submit">Create Listing</button>
                 </div>
             </div>
         </form>
     );
-};
+}
 
 export default Create;
-
