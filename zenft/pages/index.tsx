@@ -1,14 +1,16 @@
 import {
+    ConnectWallet,
     MediaRenderer,
+    useAccount,
     useActiveListings,
     useContract,
-    useAccount,
-    useNetworkMismatch,
     useNetwork,
+    useNetworkMismatch,
 } from "@thirdweb-dev/react";
-import { useRouter } from "next/router";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import {useRouter} from "next/router";
 import Link from "next/link";
+import styles from "../styles/Listing.module.css";
+import {ListingType} from "@thirdweb-dev/sdk";
 
 const Home = () => {
     const router = useRouter();
@@ -17,8 +19,9 @@ const Home = () => {
         "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
         "marketplace"
     );
-    const { data: listings, isLoading: loadingListings } =
-        useActiveListings(contract);
+    const { data: listings, isLoading: loadingListings } = useActiveListings(
+        contract
+    );
     const networkMismatch = useNetworkMismatch();
     const [, switchNetwork] = useNetwork();
 
@@ -48,22 +51,27 @@ const Home = () => {
                                 <div
                                     key={listing.id}
                                     onClick={() => router.push(`/listing/${listing.id}`)}
+                                    className={styles["listing-container"]}
                                 >
                                     <Link href={`/listing/${listing.id}`} passHref>
                                         <div>
                                             <MediaRenderer src={listing.asset.image} />
-                                            <h2>{listing.asset.name}</h2>
-                                            <p>
-                                                <b>
-                                                    {listing.buyoutCurrencyValuePerToken.displayValue}
-                                                </b>{" "}
+                                            <h2 className={styles["listing-name"]}>{listing.asset.name}</h2>
+                                            <p className={styles["listing-price"]}>
+                                                <b>{listing.buyoutCurrencyValuePerToken.displayValue}</b>{" "}
                                                 {listing.buyoutCurrencyValuePerToken.symbol}
                                             </p>
+                                            <Link href={`/listing/${listing.id}`} passHref>
+                                                <button className={styles["listing-buy-button"]}>
+                                                    {listing.type === ListingType.Direct ? "Buy Now" : "Bid Now"}
+                                                </button>
+                                            </Link>
                                         </div>
                                     </Link>
                                 </div>
                             ))
                         )}
+
                     </div>
                 )}
             </div>
