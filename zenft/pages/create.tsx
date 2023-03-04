@@ -62,7 +62,7 @@ const Create = () => {
                     transactionResult = await createDirectListing(
                         contractAddress,
                         tokenId,
-                        price
+                        price // Convert string to number
                     );
                 }
 
@@ -99,7 +99,7 @@ const Create = () => {
                 quantity: 1,
                 reservePricePerToken: 0,
                 startTimestamp: new Date(),
-                tokenId: tokenId,
+                tokenId: parseInt(tokenId),
             });
         } catch (error) {
             console.error(error);
@@ -119,7 +119,7 @@ const Create = () => {
                 listingDurationInSeconds: 60 * 60 * 24 * 7,
                 quantity: 1,
                 startTimestamp: new Date(0),
-                tokenId: tokenId,
+                tokenId: parseInt(tokenId),
             });
         } catch (error) {
             console.error(error);
@@ -179,6 +179,7 @@ const Create = () => {
                         name="tokenId"
                         placeholder="NFT Token ID"
                         required
+                        value={tokenId}
                         onChange={(e) => setTokenId(e.target.value)}
                     />
 
