@@ -85,10 +85,7 @@ const Home: NextPage = () => {
                                 <div
                                     key={listing.id}
                                     onClick={() => router.push({
-                                            pathname: `/listing/${listing.id}`,
-                                        query: {
-                                            accountData: JSON.stringify(accountData),
-                                        },
+                                            pathname: `/listing/${listing.id}`
                                         }
                                     )}
                                     className={styles["listing-container"]}

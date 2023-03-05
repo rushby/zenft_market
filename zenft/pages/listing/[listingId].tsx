@@ -14,10 +14,6 @@ const ListingPage = () => {
         "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
         "marketplace"
     );
-    const networkMismatch = useNetworkMismatch();
-    const [, switchNetwork] = useNetwork();
-    const accountDataParam = router.query.accountData as string;
-    const accountData = accountDataParam ? JSON.parse(accountDataParam) : null;
 
     useEffect(() => {
         async function fetchListing() {
@@ -50,19 +46,6 @@ const ListingPage = () => {
 
     const buyNft = async (listingId: string, quantityDesired: number) => {
         try {
-            // Ensure user is on the correct network
-            if (networkMismatch) {
-                switchNetwork && switchNetwork(1662);
-                return;
-            }
-
-            // Connect the wallet
-            if (accountData) {
-                await accountData.connect();
-            } else {
-                // TODO: user connect metamask again.
-            }
-
             // Buy the NFT
             await contract?.buyoutListing(listingId, quantityDesired);
 
