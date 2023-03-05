@@ -51,6 +51,9 @@ const Header = () => {
 
     return (
         <div className={styles.header}>
+            <div className={styles.left}>
+                <h1 className={styles.logo}>ZENFT</h1>
+            </div>
             <div className={styles.right}>
                 {isLoggedIn && (
                     <>

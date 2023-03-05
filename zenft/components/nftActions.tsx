@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "../styles/NftActions.module.css";
 import { useRouter } from "next/router";
+import Listings from "./listings";
 
 const NftActions = () => {
     const router = useRouter();
@@ -10,16 +11,26 @@ const NftActions = () => {
     };
 
     return (
-        <div className={styles.actions}>
-            <div className={styles.sell}>
-                <button className={styles.button} onClick={handleSellButtonClick}>Sell NFT</button>
-                <p className={styles.text}>Click to sell your NFT</p>
+        <div className={styles.container}>
+            <div className={styles.actions}>
+                <div className={styles.sell}>
+                    <div className={styles["sell-label"]}>
+                        <h3>SELL</h3>
+                    </div>
+                    <button className={styles.button} onClick={handleSellButtonClick}>Sell NFT</button>
+                </div>
+                <div className={styles.mint}>
+                    <div className={styles["mint-label"]}>
+                        <h3>MINT</h3>
+                    </div>
+                    <button className={styles.button}>Mint NFT</button>
+                </div>
             </div>
-            <div className={styles.mint}>
-                <button className={styles.button}>Mint NFT</button>
-                <p className={styles.text}>Click to mint a new NFT</p>
+            <div>
+                <Listings/>
             </div>
         </div>
+
     );
 };
 

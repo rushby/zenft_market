@@ -41,9 +41,12 @@
 }
 
 .listing-title {
-    margin: 0 0 1rem 0;
-    font-size: 1.5rem;
-    color: #fff;
+    font-size: 3rem;
+    font-weight: bold;
+    background: linear-gradient(90deg, #0e9de5 -1.37%, rgba(14, 157, 229, 0)), #26db8d;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
 }
 
 .listing-price {
@@ -146,4 +149,10 @@
     background-color: #f2f2f2;
     font-weight: bold;
     text-align: left;
+}
+
+.listings-title {
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
