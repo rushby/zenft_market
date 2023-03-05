@@ -7,6 +7,7 @@ import {
 import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { useRouter } from "next/router";
 import { useAccount } from "@thirdweb-dev/react";
+import Header from "../components/header";
 
 const Create = () => {
     const router = useRouter();
@@ -131,6 +132,11 @@ const Create = () => {
     const [priceError, setPriceError] = useState("");
 
     return (
+        <div>
+            <div>
+                <Header />
+            </div>
+
         <form onSubmit={(e) => handleCreateListing(e)}>
             <div>
                 {/* Form Section */}
@@ -213,6 +219,7 @@ const Create = () => {
                 </div>
             </div>
         </form>
+        </div>
     );
 }
 

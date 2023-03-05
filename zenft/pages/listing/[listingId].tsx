@@ -1,8 +1,9 @@
-import {useContract, useNetwork, useNetworkMismatch, useAccount, ConnectWallet, useUser} from "@thirdweb-dev/react";
+import {useContract, useUser} from "@thirdweb-dev/react";
 import { AuctionListing, DirectListing, ListingType } from "@thirdweb-dev/sdk";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../../styles/Listing.module.css";
+import Header from "../../components/header";
 
 type Listing = AuctionListing | DirectListing;
 
@@ -64,7 +65,9 @@ const ListingPage = () => {
     };
 
     return (
+
         <div>
+            <Header/>
             {listing ? (
                 <div>
                     <h1 className={styles["listing-page-h1"]}>{listing.asset.name}</h1>

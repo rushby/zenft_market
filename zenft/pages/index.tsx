@@ -9,8 +9,8 @@ import Link from "next/link";
 import styles from "../styles/Listing.module.css";
 import { ListingType } from "@thirdweb-dev/sdk";
 import { NextPage } from "next";
-import { useState } from "react";
 import Header from "../components/header";
+import NftActions from "../components/nftActions";
 
 const Home: NextPage = () => {
     const router = useRouter();
@@ -22,16 +22,13 @@ const Home: NextPage = () => {
     const { data: listings, isLoading: loadingListings } = useActiveListings(
         contract
     );
-    const [secret, setSecret] = useState("");
-    const getSecret = async () => {
-        const res = await fetch("/api/secret");
-        const data = await res.json();
-        setSecret(data.message);
-    };
 
     return (
         <div>
-            <Header getSecret={getSecret} secret={secret} />
+            <Header/>
+            <div>
+                <NftActions />
+            </div>
             <div>
                 {loadingListings ? (
                     <div>Loading listings...</div>
