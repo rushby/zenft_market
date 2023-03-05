@@ -1,4 +1,4 @@
-import {useContract, useNetwork, useNetworkMismatch, useAccount, ConnectWallet} from "@thirdweb-dev/react";
+import {useContract, useNetwork, useNetworkMismatch, useAccount, ConnectWallet, useUser} from "@thirdweb-dev/react";
 import { AuctionListing, DirectListing, ListingType } from "@thirdweb-dev/sdk";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -14,6 +14,7 @@ const ListingPage = () => {
         "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
         "marketplace"
     );
+    const { isLoggedIn } = useUser();
 
     useEffect(() => {
         async function fetchListing() {
@@ -45,6 +46,11 @@ const ListingPage = () => {
     };
 
     const buyNft = async (listingId: string, quantityDesired: number) => {
+        if (!isLoggedIn) {
+            alert("Please log in to buy this NFT.");
+            return;
+        }
+
         try {
             // Buy the NFT
             await contract?.buyoutListing(listingId, quantityDesired);
