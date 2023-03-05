@@ -2,17 +2,18 @@ import {
     MediaRenderer,
     useAccount,
     useActiveListings,
-    useAddress,
+    useAddress, useAuth,
     useContract, useLogin, useLogout,
     useMetamask,
-    useUser
+    useUser,
+    useDisconnect
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import styles from "../styles/Listing.module.css";
 import { ListingType } from "@thirdweb-dev/sdk";
 import {NextPage} from "next";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 const Home: NextPage = () => {
     const router = useRouter();
@@ -21,10 +22,13 @@ const Home: NextPage = () => {
     const { data: listings, isLoading: loadingListings } = useActiveListings(contract);
     const address = useAddress();
     const connect = useMetamask();
+    const disconnect = useDisconnect();
     const { login } = useLogin();
     const { logout } = useLogout();
     const { user, isLoggedIn } = useUser();
     const [secret, setSecret] = useState();
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
+    const [isLoginInProgress, setIsLoginInProgress] = useState(false);
 
     const getSecret = async () => {
         const res = await fetch("/api/secret");
@@ -32,16 +36,34 @@ const Home: NextPage = () => {
         setSecret(data.message);
     };
 
+
+    useEffect(() => {
+        if (isButtonClicked && address && !isLoggedIn && !isLoginInProgress) {
+            setIsLoginInProgress(true);
+            login().then(() => {
+                setIsLoginInProgress(false);
+            });
+        }
+    }, [address, isLoggedIn, isButtonClicked, login, isLoginInProgress]);
+
     return (
         <div>
             <div>
                 {isLoggedIn ? (
                     <button onClick={() => logout()}>Logout</button>
-                ) : address ? (
-                    <button onClick={() => login()}>Login</button>
                 ) : (
-                    <button onClick={() => connect()}>Connect</button>
+                    <button
+                        onClick={() => {
+                            setIsButtonClicked(true);
+                            connect().then(() => {
+                                login();
+                            });
+                        }}
+                    >
+                        Connect and Sign In
+                    </button>
                 )}
+
                 <button onClick={getSecret}>Get Secret</button>
 
                 <pre>Connected Wallet: {address}</pre>
