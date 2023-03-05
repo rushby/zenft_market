@@ -10,6 +10,7 @@
     transition: color 0.15s ease, border-color 0.15s ease;
     width: 200px;
     height: 300px;
+    cursor: pointer;
 }
 
 .listing-container:hover,
