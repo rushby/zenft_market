@@ -8,17 +8,15 @@ import {
 import { useState } from "react";
 import styles from "../styles/Header.module.css";
 
-type HeaderProps = {
-    secret: string;
-};
-
-const Header = ({ secret }: HeaderProps) => {
+const Header = () => {
     const address = useAddress();
     const connect = useMetamask();
     const { login } = useLogin();
     const { logout } = useLogout();
     const { user, isLoggedIn } = useUser();
     const [isConnecting, setIsConnecting] = useState(false);
+    const [error, setError] = useState("");
+    const [buttonState, setButtonState] = useState("normal");
 
     const handleConnectAndSignIn = async () => {
         if (isConnecting) {
@@ -29,36 +27,52 @@ const Header = ({ secret }: HeaderProps) => {
             await connect().then(() => {
                 console.log("Wallet connected");
             });
+            new Promise<void>((resolve, reject) => {
+                setTimeout(() => {
+                    login()
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch((error) => {
+                            setButtonState("failed");
+                            setTimeout(() => {
+                                setButtonState("normal");
+                            }, 3000); // return to normal state after 3 seconds
+                        });
+                }, 1000);
+            });
         } catch (error) {
-            console.error(error);
+            setError("An error occurred while connecting to the wallet."); // set the error message
         }
         setIsConnecting(false);
-        setTimeout(async () => {
-            await login();
-        }, 1000);
     };
+
+    const buttonText = buttonState === "failed" ? "Connect Failed" : "Connect and Sign In";
 
     return (
         <div className={styles.header}>
             <div className={styles.right}>
                 {isLoggedIn && (
                     <>
-                <pre className={styles.text}>
-                    Connected Wallet: {address}
-                </pre>
+                        <pre className={styles.text}>Connected Wallet: {address}</pre>
                         <button className={styles.button} onClick={() => logout()}>
                             Logout
                         </button>
                     </>
                 )}
                 {!isLoggedIn && (
-                    <button className={styles.button} onClick={handleConnectAndSignIn}>
-                        Connect and Sign In
-                    </button>
+                    <div>
+                        <button
+                            className={`${styles.button} ${styles[buttonState]}`}
+                            onClick={handleConnectAndSignIn}
+                        >
+                            {buttonText}
+                        </button>
+                        {error && <div className={styles.error}>{error}</div>}
+                    </div>
                 )}
             </div>
         </div>
-
     );
 };
 

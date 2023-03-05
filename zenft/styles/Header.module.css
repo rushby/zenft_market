@@ -32,3 +32,22 @@
 .button:hover {
     background-color: #444;
 }
+
+.error {
+    margin-top: 8px;
+    color: red;
+    font-size: 14px;
+}
+
+.normal {
+    background: linear-gradient(90deg, #0e9de5 -1.37%, rgba(14, 157, 229, 0)), #26db8d;
+}
+
+.failed {
+    background-color: red;
+}
+
+.loading {
+    background-color: gray;
+}
+
