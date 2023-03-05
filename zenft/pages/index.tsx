@@ -2,12 +2,7 @@ import {
     MediaRenderer,
     useAccount,
     useActiveListings,
-    useAddress,
     useContract,
-    useLogin,
-    useLogout,
-    useMetamask,
-    useUser,
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -15,6 +10,7 @@ import styles from "../styles/Listing.module.css";
 import { ListingType } from "@thirdweb-dev/sdk";
 import { NextPage } from "next";
 import { useState } from "react";
+import Header from "../components/header";
 
 const Home: NextPage = () => {
     const router = useRouter();
@@ -26,53 +22,16 @@ const Home: NextPage = () => {
     const { data: listings, isLoading: loadingListings } = useActiveListings(
         contract
     );
-    const address = useAddress();
-    const connect = useMetamask();
-    const { login } = useLogin();
-    const { logout } = useLogout();
-    const { user, isLoggedIn } = useUser();
-    const [secret, setSecret] = useState();
-    const [isConnecting, setIsConnecting] = useState(false);
-
+    const [secret, setSecret] = useState("");
     const getSecret = async () => {
         const res = await fetch("/api/secret");
         const data = await res.json();
         setSecret(data.message);
     };
 
-    const handleConnectAndSignIn = async () => {
-        if (isConnecting) {
-            return;
-        }
-        setIsConnecting(true);
-        try {
-            await connect().then(() => {
-                console.log("Wallet connected");
-            });
-        } catch (error) {
-            console.error(error);
-        }
-        setIsConnecting(false);
-        setTimeout(async () => {
-            await login();
-        }, 1000);
-    };
-
     return (
         <div>
-            <div>
-                {isLoggedIn ? (
-                    <button onClick={() => logout()}>Logout</button>
-                ) : (
-                    <button onClick={handleConnectAndSignIn}>Connect and Sign In</button>
-                )}
-
-                <button onClick={getSecret}>Get Secret</button>
-
-                <pre>Connected Wallet: {address}</pre>
-                <pre>User: {JSON.stringify(user, undefined, 2) || "N/A"}</pre>
-                <pre>Secret: {secret || "N/A"}</pre>
-            </div>
+            <Header getSecret={getSecret} secret={secret} />
             <div>
                 {loadingListings ? (
                     <div>Loading listings...</div>
