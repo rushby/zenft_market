@@ -8,6 +8,8 @@ import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { useRouter } from "next/router";
 import { useAccount } from "@thirdweb-dev/react";
 import Header from "../components/header";
+import Breadcrumbs from "../components/breadcrumbs";
+import styles from "../styles/Listing.module.css";
 
 const Create = () => {
     const router = useRouter();
@@ -23,6 +25,10 @@ const Create = () => {
     const [price, setPrice] = useState("");
     const [account] = useAccount();
     const { address: accountAddress } = account?.data || {};
+    const breadcrumbs = [
+        { label: "Home", path: "/" },
+        { label: "Sell", path: "/create" }
+    ];
 
     const handleCreateListing = async (
         e: React.FormEvent<HTMLFormElement>
@@ -133,92 +139,87 @@ const Create = () => {
 
     return (
         <div>
-            <div>
+            <div className={styles.header}>
                 <Header />
+                <Breadcrumbs crumbs={breadcrumbs} />
             </div>
+            <div className={styles.formContainer}>
+            <form onSubmit={(e) => handleCreateListing(e)} className={styles.form}>
+                <h1>Sell Your NFT</h1>
 
-        <form onSubmit={(e) => handleCreateListing(e)}>
-            <div>
-                {/* Form Section */}
-                <div>
-                    <h1>Upload your NFT to the marketplace:</h1>
-
-                    {/* Toggle between direct listing and auction listing */}
-                    <div>
-                        <input
-                            type="radio"
+                <div className={styles.fieldGroup}>
+                    <div className={styles.label}>
+                        <label htmlFor="listingType" className={styles.label}>Listing Type:</label>
+                        <select
                             name="listingType"
-                            id="directListing"
-                            value="directListing"
-                            checked={listingType === "directListing"}
-                            onChange={() => setListingType("directListing")}
-                        />
-                        <label htmlFor="directListing">Direct Listing</label>
-                        <input
-                            type="radio"
-                            name="listingType"
-                            id="auctionListing"
-                            value="auctionListing"
-                            checked={listingType === "auctionListing"}
-                            onChange={() => setListingType("auctionListing")}
-                        />
-                        <label htmlFor="auctionListing">Auction Listing</label>
+                            id="listingType"
+                            value={listingType}
+                            onChange={(e) => setListingType(e.target.value)}
+                            className={styles.dropdown}
+                        >
+                            <option value="directListing">Direct Listing</option>
+                            <option value="auctionListing">Auction Listing</option>
+                        </select>
                     </div>
-                    <div>
-                        {listingType === "directListing" && <p>Selected listing type: Direct Listing</p>}
-                        {listingType === "auctionListing" && <p>Selected listing type: Auction Listing</p>}
-                    </div>
+                </div>
 
-                    {/* NFT Contract Address Field */}
+                <div className={styles.fieldGroup}>
+                    <label htmlFor="contractAddress" className={styles.label}>NFT Contract Address:</label>
                     <input
                         type="text"
                         name="contractAddress"
-                        placeholder="NFT Contract Address"
+                        id="contractAddress"
+                        placeholder="Enter the contract address of your NFT"
                         required
                         value={contractAddress}
                         onChange={(e) => setContractAddress(e.target.value)}
+                        className={styles.textInput}
                     />
+                </div>
 
-                    {/* NFT Token ID Field */}
+                <div className={styles.fieldGroup}>
+                    <label htmlFor="tokenId" className={styles.label}>NFT Token ID:</label>
                     <input
                         type="text"
                         name="tokenId"
-                        placeholder="NFT Token ID"
+                        id="tokenId"
+                        placeholder="Enter the token ID of your NFT"
                         required
                         value={tokenId}
                         onChange={(e) => setTokenId(e.target.value)}
+                        className={styles.textInput}
                     />
+                </div>
 
-                    {/* Sale Price For Listing Field */}
+                <div className={styles.fieldGroup}>
+                    <label htmlFor="price" className={styles.label}>Sale Price:</label>
                     <input
                         type="text"
                         name="price"
-                        placeholder="Sale Price"
+                        id="price"
+                        placeholder="Enter the sale price of your NFT"
                         required
+                        value={price}
                         onChange={(e) => setPrice(e.target.value)}
+                        className={styles.textInput}
                     />
-
-                    {/* Display error message if a required field has not been filled */}
-                    {networkMismatch && (
-                        <p>Please switch to the correct network in your wallet</p>
-                    )}
-                    {!networkMismatch &&
-                        (!account || !accountAddress) && (
-                            <p>Please connect your wallet</p>
-                        )}
-                    {networkMismatch ||
-                        (!account || !accountAddress ||
-                            !contractAddress ||
-                            !tokenId ||
-                            !price) && (
-                            <p>Please fill in all required fields</p>
-                        )
-                    }
-
-                    <button type="submit">Create Listing</button>
                 </div>
+
+                <div className={styles.errorGroup}>
+                    {networkMismatch && (
+                        <p className={styles.error}>Please switch to the correct network in your wallet</p>
+                    )}
+                    {!networkMismatch && (!account || !accountAddress) && (
+                        <p className={styles.error}>Please connect your wallet</p>
+                    )}
+                    {networkMismatch || !account || !accountAddress || !contractAddress || !tokenId || !price ? (
+                        <p className={styles.error}>Please fill in all required fields</p>
+                    ) : null}
+                </div>
+
+                <button type="submit" className={styles.button}>Create Listing</button>
+            </form>
             </div>
-        </form>
         </div>
     );
 }

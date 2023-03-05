@@ -1,6 +1,4 @@
-// components/breadcrumbs.tsx
-
-import Link from "next/link";
+import { useRouter } from "next/router";
 import styles from "../styles/Breadcrumbs.module.css";
 
 type Crumb = {
@@ -13,21 +11,27 @@ type Props = {
 };
 
 const Breadcrumbs = ({ crumbs }: Props) => {
+    const router = useRouter();
+
     return (
         <nav aria-label="breadcrumb">
-            <ol className={styles.breadcrumbs}>
+            <div className={styles.breadcrumbs}>
                 {crumbs.map((crumb, index) => (
-                    <li key={crumb.path}>
+                    <span key={crumb.path}>
                         {index === crumbs.length - 1 ? (
-                            <span className={styles.current}>{crumb.label}</span>
+                            <span className={`${styles.current}`}>{crumb.label}</span>
                         ) : (
-                            <Link href={crumb.path} passHref>
-                                <span className={styles.link}>{crumb.label}</span>
-                            </Link>
+                            <span
+                                className={styles.link}
+                                onClick={() => router.push(crumb.path)}
+                            >
+                                {crumb.label}
+                            </span>
                         )}
-                    </li>
+                        {index < crumbs.length - 1 && <span> &gt; </span>}
+                    </span>
                 ))}
-            </ol>
+            </div>
         </nav>
     );
 };

@@ -157,3 +157,112 @@
     margin-top: 2rem;
     margin-bottom: 1rem;
 }
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form input {
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.form label {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.form select {
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.form button {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #0070f3;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.form button:hover {
+    background-color: #0052cc;
+}
+
+.form p {
+    margin-top: 20px;
+    color: red;
+    font-weight: bold;
+}
+
+.fieldGroup {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.labelAndDropdown {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.label {
+    display: flex;
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 10px;
+    flex-grow: 1;
+    max-width: 300px;
+}
+
+.dropdown {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    flex-grow: 1;
+}
+
+.textInput {
+    margin: 0;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    flex-grow: 1;
+}
