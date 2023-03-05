@@ -2,33 +2,37 @@ import {
     MediaRenderer,
     useAccount,
     useActiveListings,
-    useAddress, useAuth,
-    useContract, useLogin, useLogout,
+    useAddress,
+    useContract,
+    useLogin,
+    useLogout,
     useMetamask,
     useUser,
-    useDisconnect
 } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import styles from "../styles/Listing.module.css";
 import { ListingType } from "@thirdweb-dev/sdk";
-import {NextPage} from "next";
-import {useEffect, useState} from "react";
+import { NextPage } from "next";
+import { useState } from "react";
 
 const Home: NextPage = () => {
     const router = useRouter();
     const [{ data: accountData }] = useAccount();
-    const { contract } = useContract("0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6", "marketplace");
-    const { data: listings, isLoading: loadingListings } = useActiveListings(contract);
+    const { contract } = useContract(
+        "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
+        "marketplace"
+    );
+    const { data: listings, isLoading: loadingListings } = useActiveListings(
+        contract
+    );
     const address = useAddress();
     const connect = useMetamask();
-    const disconnect = useDisconnect();
     const { login } = useLogin();
     const { logout } = useLogout();
     const { user, isLoggedIn } = useUser();
     const [secret, setSecret] = useState();
-    const [isButtonClicked, setIsButtonClicked] = useState(false);
-    const [isLoginInProgress, setIsLoginInProgress] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
 
     const getSecret = async () => {
         const res = await fetch("/api/secret");
@@ -36,15 +40,23 @@ const Home: NextPage = () => {
         setSecret(data.message);
     };
 
-
-    useEffect(() => {
-        if (isButtonClicked && address && !isLoggedIn && !isLoginInProgress) {
-            setIsLoginInProgress(true);
-            login().then(() => {
-                setIsLoginInProgress(false);
-            });
+    const handleConnectAndSignIn = async () => {
+        if (isConnecting) {
+            return;
         }
-    }, [address, isLoggedIn, isButtonClicked, login, isLoginInProgress]);
+        setIsConnecting(true);
+        try {
+            await connect().then(() => {
+                console.log("Wallet connected");
+            });
+        } catch (error) {
+            console.error(error);
+        }
+        setIsConnecting(false);
+        setTimeout(async () => {
+            await login();
+        }, 1000);
+    };
 
     return (
         <div>
@@ -52,16 +64,7 @@ const Home: NextPage = () => {
                 {isLoggedIn ? (
                     <button onClick={() => logout()}>Logout</button>
                 ) : (
-                    <button
-                        onClick={() => {
-                            setIsButtonClicked(true);
-                            connect().then(() => {
-                                login();
-                            });
-                        }}
-                    >
-                        Connect and Sign In
-                    </button>
+                    <button onClick={handleConnectAndSignIn}>Connect and Sign In</button>
                 )}
 
                 <button onClick={getSecret}>Get Secret</button>
