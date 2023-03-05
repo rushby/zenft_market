@@ -1,9 +1,11 @@
-import Link from 'next/link';
-import styles from '../styles/Breadcrumbs.module.css';
+// components/breadcrumbs.tsx
+
+import Link from "next/link";
+import styles from "../styles/Breadcrumbs.module.css";
 
 type Crumb = {
     label: string;
-    href: string;
+    path: string;
 };
 
 type Props = {
@@ -12,16 +14,20 @@ type Props = {
 
 const Breadcrumbs = ({ crumbs }: Props) => {
     return (
-        <nav className={styles.breadcrumbs}>
-            <ul>
+        <nav aria-label="breadcrumb">
+            <ol className={styles.breadcrumbs}>
                 {crumbs.map((crumb, index) => (
-                    <li key={index}>
-                        <Link href={crumb.href}>
-                            <a>{crumb.label}</a>
-                        </Link>
+                    <li key={crumb.path}>
+                        {index === crumbs.length - 1 ? (
+                            <span className={styles.current}>{crumb.label}</span>
+                        ) : (
+                            <Link href={crumb.path} passHref>
+                                <span className={styles.link}>{crumb.label}</span>
+                            </Link>
+                        )}
                     </li>
                 ))}
-            </ul>
+            </ol>
         </nav>
     );
 };

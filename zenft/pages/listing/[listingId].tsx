@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../../styles/Listing.module.css";
 import Header from "../../components/header";
+import Breadcrumbs from "../../components/breadcrumbs";
 
 type Listing = AuctionListing | DirectListing;
 
@@ -16,22 +17,20 @@ const ListingPage = () => {
         "marketplace"
     );
     const { isLoggedIn } = useUser();
+    const breadcrumbs = [
+        { label: "Home", path: "/" },
+        { label: "Listings", path: "/listings" }
+    ];
 
     useEffect(() => {
         async function fetchListing() {
-            try {
-                const activeListings = await contract?.getActiveListings();
-                const matchingListing = activeListings?.find(
-                    (listing) => listing.id === listingId
-                );
+            const activeListings = await contract?.getActiveListings();
+            const matchingListing = activeListings?.find(
+                (listing) => listing.id === listingId
+            );
 
-                if (matchingListing) {
-                    setListing(matchingListing);
-                } else {
-                    throw new Error(`Listing with ID ${listingId} not found`);
-                }
-            } catch (error) {
-                console.error(error);
+            if (matchingListing) {
+                setListing(matchingListing);
             }
         }
 
@@ -64,10 +63,12 @@ const ListingPage = () => {
         }
     };
 
-    return (
 
+
+    return (
         <div>
             <Header/>
+            <Breadcrumbs crumbs={breadcrumbs} />
             {listing ? (
                 <div>
                     <h1 className={styles["listing-page-h1"]}>{listing.asset.name}</h1>
