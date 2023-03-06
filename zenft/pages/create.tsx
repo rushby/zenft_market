@@ -8,6 +8,8 @@ import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
 import CreateDirectListingForm from "../components/createDirectListingForm";
+import {FormWithHookForm} from "../components/forms/FormInputDropdown";
+import {CreateListing} from "../components/forms/CreateListing";
 
 const Create = () => {
     const { contract } = useContract(
@@ -50,7 +52,7 @@ const Create = () => {
                 <Breadcrumbs crumbs={breadcrumbs} />
             </div>
             <div>
-                <CreateDirectListingForm/>
+                <CreateListing/>
             </div>
         </div>
     );
