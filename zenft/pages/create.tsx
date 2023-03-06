@@ -7,8 +7,6 @@ import { useAccount } from "@thirdweb-dev/react";
 import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
-import CreateDirectListingForm from "../components/createDirectListingForm";
-import {FormWithHookForm} from "../components/forms/FormInputDropdown";
 import {CreateListing} from "../components/forms/CreateListing";
 
 const Create = () => {

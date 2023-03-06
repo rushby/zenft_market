@@ -1,33 +1,72 @@
+import React from "react";
 import { Button, Paper, Typography } from "@mui/material";
-import { FormProvider, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useContract } from "@thirdweb-dev/react";
+import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { FormInputText } from "./FormInputText";
-import { FormInputMultiCheckbox } from "./FormInputMultiCheckbox";
-import { FormInputDropdown } from "./FormInputDropdown";
-import { FormInputSlider } from "./FormInputSlider";
-import { FormInputRadio } from "./FormInputRadio";
 
 interface IFormInput {
-    textValue: string;
-    radioValue: string;
-    checkboxValue: string[];
-    dateValue: Date;
-    dropdownValue: string;
-    sliderValue: number;
+    contractAddress: string;
+    tokenId: string;
+    price: string;
 }
 
 const defaultValues = {
-    textValue: "",
-    radioValue: "",
-    checkboxValue: [],
-    dateValue: new Date(),
-    dropdownValue: "",
-    sliderValue: 0,
+    contractAddress: "",
+    tokenId: "",
+    price: ""
 };
 
 export const CreateListing = () => {
+    const { contract } = useContract(
+        "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
+        "marketplace"
+    );
     const methods = useForm<IFormInput>({ defaultValues: defaultValues });
-    const { handleSubmit, reset, control, setValue, watch } = methods;
-    const onSubmit = (data: IFormInput) => console.log(data);
+    const { handleSubmit, register, control, setValue, formState: { errors } } = methods;
+
+
+    const onSubmit = async (data: IFormInput) => {
+        const { contractAddress, tokenId, price } = data;
+        try {
+            return await contract?.direct.createListing({
+                assetContractAddress: contractAddress,
+                buyoutPricePerToken: price,
+                currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+                listingDurationInSeconds: 60 * 60 * 24 * 7,
+                quantity: 1,
+                startTimestamp: new Date(0),
+                tokenId: parseInt(tokenId),
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    register("contractAddress", {
+        required: "Contract Address is required",
+        pattern: {
+            value: /^0x[a-fA-F0-9]{40}$/,
+            message: "Invalid Contract Address",
+        },
+    });
+
+    register("tokenId", {
+        required: "Token Id is required",
+        pattern: {
+            value: /^0x[a-fA-F0-9]{40}$/,
+            message: "Token Id must be a number",
+        },
+    });
+
+    register("price", {
+        required: "Price is required",
+        pattern: {
+            value: /^[0-9]+(\.[0-9]{1,18})?$/,
+            message: "Price must be a whole number or a decimal with up to 18 decimal places",
+        },
+    });
+
 
     return (
         <Paper
@@ -38,39 +77,15 @@ export const CreateListing = () => {
                 margin: "10px 300px",
             }}
         >
-            <Typography variant="h6"> Form Demo</Typography>
+            <Typography variant="h6">Direct Listing</Typography>
 
-            <FormInputText name="textValue" control={control} label="Text Input" />
-            <FormInputRadio
-                name={"radioValue"}
-                control={control}
-                label={"Radio Input"}
-            />
-            <FormInputDropdown
-                name="dropdownValue"
-                control={control}
-                label="Dropdown Input"
-            />
-            <FormInputMultiCheckbox
-                control={control}
-                setValue={setValue}
-                name={"checkboxValue"}
-                label={"Checkbox Input"}
-            />
-            <FormInputSlider
-                name={"sliderValue"}
-                control={control}
-                setValue={setValue}
-                label={"Slider Input"}
-            />
+            <FormInputText name="contractAddress" control={control} label="Contract Address" />
+            <FormInputText name="tokenId" control={control} label="Token Id" />
+            <FormInputText name="price" control={control} label="Price" />
 
             <Button onClick={handleSubmit(onSubmit)} variant={"contained"}>
                 {" "}
                 Submit{" "}
-            </Button>
-            <Button onClick={() => reset()} variant={"outlined"}>
-                {" "}
-                Reset{" "}
             </Button>
         </Paper>
     );
