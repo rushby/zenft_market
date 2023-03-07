@@ -22,7 +22,7 @@ export const FormInputDropdown:
 
     return (
         <FormControl size={"small"}>
-            <InputLabel>{label}</InputLabel>
+            {label && <InputLabel>{label}</InputLabel>}
             <Controller
                 render={({ field: { onChange, value } }) => (
                     <Select onChange={onChange} value={value}>

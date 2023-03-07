@@ -27,7 +27,7 @@ export const customTheme = createTheme({
                     root: {
                         color: 'white', // Change the label color
                         '&.Mui-focused': {
-                            color: 'green' // Change the label color on focus
+                            color: 'white' // Change the label color on focus
                         }
                     }
                 }

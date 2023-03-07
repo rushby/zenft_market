@@ -24,7 +24,7 @@ export const ListingType = () => {
             <Typography variant="h6"> Choose Listing Type </Typography>
             <div style={{ marginTop: "16px" }}>
                 <ThemeProvider theme={customTheme}>
-                    <FormInputDropdown name="listingType" control={control} label="Listing Type" options={options}/>
+                    <FormInputDropdown name="listingType" control={control} options={options}/>
                 </ThemeProvider>
             </div>
         </div>
