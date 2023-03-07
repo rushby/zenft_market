@@ -1,11 +1,12 @@
 import {useContract, useUser} from "@thirdweb-dev/react";
 import { AuctionListing, DirectListing, ListingType } from "@thirdweb-dev/sdk";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../styles/Listing.module.css";
 import Header from "../../components/header";
 import Breadcrumbs from "../../components/breadcrumbs";
 import SignIn from "../../components/SignIn";
+import {Typography} from "@mui/material";
 
 type Listing = AuctionListing | DirectListing;
 
@@ -121,7 +122,12 @@ const ListingPage = () => {
                             </button>
                         ) : (
                             <div className={styles["listing-signin-container"]}>
-                                <SignIn />
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                    <Typography variant="h6" style={{ color: "orangered", margin: "0 0 20px" }}>
+                                        Must be signed in to buy...
+                                    </Typography>
+                                    <SignIn />
+                                </div>
                             </div>
                         )}
                     </div>
