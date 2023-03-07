@@ -1,4 +1,4 @@
-import {useContract, useUser} from "@thirdweb-dev/react";
+import {useContract, useUser, useBuyNow, Web3Button, BuyNowParams} from "@thirdweb-dev/react";
 import { AuctionListing, DirectListing, ListingType } from "@thirdweb-dev/sdk";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -14,11 +14,13 @@ const ListingPage = () => {
     const router = useRouter();
     const listingId = router.query.listingId as string;
     const [listing, setListing] = useState<Listing | null>(null);
+    const contractAddress = "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6";
     const { contract } = useContract(
-        "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
+        contractAddress,
         "marketplace"
     );
     const { isLoggedIn } = useUser();
+    const { mutateAsync: buyNow, isLoading, error } = useBuyNow(contract);
     const breadcrumbs = [
         { label: "Home", path: "/" },
         { label: "Listings", path: "/listings" }
@@ -35,36 +37,8 @@ const ListingPage = () => {
                 setListing(matchingListing);
             }
         }
-
         fetchListing();
     }, [contract, listingId]);
-
-    const createBidOrOffer = async () => {
-        try {
-            //
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const buyNft = async (listingId: string, quantityDesired: number) => {
-        if (!isLoggedIn) {
-            alert("Please log in to buy this NFT.");
-            return;
-        }
-
-        try {
-            // Buy the NFT
-            await contract?.buyoutListing(listingId, quantityDesired);
-
-            // Display success message
-            alert("NFT bought successfully!");
-        } catch (error) {
-            console.error(error);
-            alert(error);
-        }
-    };
-
 
 
     return (
@@ -108,19 +82,21 @@ const ListingPage = () => {
                             </tbody>
                         </table>
                         {isLoggedIn ? (
-                            <button
-                                className={styles["listing-buy-button-large"]}
-                                onClick={() => {
-                                    if (listing.type === ListingType.Direct) {
-                                        buyNft(listing.id, 1);
-                                    } else {
-                                        createBidOrOffer();
+                            <div>
+                                <Web3Button
+                                    contractAddress={contractAddress}
+                                    action={() =>
+                                        buyNow({
+                                            id: listingId, // ID of the listing to buy
+                                            type: ListingType.Direct, // Direct (0) or Auction (1)
+                                            buyAmount: 1, // Amount to buy
+                                            buyForWallet: undefined, // Wallet to buy for, defaults to current wallet
+                                        })
                                     }
-                                }}
-                            >
-                                {listing.type === ListingType.Direct ? "Buy Now" : "Bid Now"}
-                            </button>
-                        ) : (
+                                >
+                                    Buy Now
+                                </Web3Button>
+                            </div>) : (
                             <div className={styles["listing-signin-container"]}>
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                     <Typography variant="h6" style={{ color: "orangered", margin: "0 0 20px" }}>
