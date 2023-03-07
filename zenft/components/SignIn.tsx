@@ -17,6 +17,7 @@ const SignIn = () => {
     const [isConnecting, setIsConnecting] = useState(false);
     const [error, setError] = useState("");
     const [buttonState, setButtonState] = useState("normal");
+    const [currentAccount, setCurrentAccount] = useState("");
 
     const handleConnectAndSignIn = async () => {
         if (isConnecting) {
@@ -52,8 +53,12 @@ const SignIn = () => {
     useEffect(() => {
         const handleAccountsChanged = () => {
             if (window.ethereum) {
-                window.ethereum.request({ method: "eth_accounts" }).then((accounts: string[]) => {
+                (window as any).ethereum.request({ method: "eth_accounts" }).then((accounts: string[]) => {
                     if (accounts.length === 0) {
+                        setCurrentAccount("");
+                        logout();
+                    } else if (accounts[0] !== currentAccount) {
+                        setCurrentAccount(accounts[0]);
                         logout();
                     }
                 });
@@ -61,6 +66,11 @@ const SignIn = () => {
         };
 
         if (window.ethereum) {
+            window.ethereum.request({ method: "eth_accounts" }).then((accounts: string[]) => {
+                if (accounts.length > 0) {
+                    setCurrentAccount(accounts[0]);
+                }
+            });
             (window as any).ethereum.on("accountsChanged", handleAccountsChanged);
         }
 
@@ -69,7 +79,7 @@ const SignIn = () => {
                 (window as any).ethereum.removeListener("accountsChanged", handleAccountsChanged);
             }
         };
-    }, []);
+    }, [currentAccount]);
 
     return (
         <>

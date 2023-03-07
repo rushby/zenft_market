@@ -8,7 +8,6 @@ import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
 import {DirectListing} from "../components/forms/DirectListing";
-import {FormInputDropdown} from "../components/forms/FormInputDropdown";
 import {ListingType} from "../components/forms/ListingType";
 
 const Create = () => {
