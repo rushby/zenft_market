@@ -59,7 +59,7 @@ const ListingPage = () => {
             }, 5000);
         }
     }
-    
+
     return (
         <div>
             <Header />

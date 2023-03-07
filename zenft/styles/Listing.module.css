@@ -141,6 +141,19 @@
     color: #fff;
 }
 
+.listing-buy-button {
+    display: block;
+    margin: 0.5rem auto auto;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    background-color: #26db8d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
 .listing-buy-button-large {
     border: none;
     border-radius: 4px;
