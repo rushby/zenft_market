@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import styles from "../../styles/Listing.module.css";
 import Header from "../../components/header";
 import Breadcrumbs from "../../components/breadcrumbs";
+import SignIn from "../../components/SignIn";
 
 type Listing = AuctionListing | DirectListing;
 
@@ -67,19 +68,25 @@ const ListingPage = () => {
 
     return (
         <div>
-            <Header/>
+            <Header />
             <Breadcrumbs crumbs={breadcrumbs} />
             {listing ? (
                 <div>
                     <h1 className={styles["listing-page-h1"]}>{listing.asset.name}</h1>
                     <div className={styles["listing-container-large"]}>
-                        <img src={listing.asset.image ?? "default-image-url"} alt={String(listing.asset.name) ?? "default-image-alt"} />
+                        <img
+                            src={listing.asset.image ?? "default-image-url"}
+                            alt={String(listing.asset.name) ?? "default-image-alt"}
+                        />
                         <h2>{listing.asset.name}</h2>
                         <table className={styles["listing-details"]}>
                             <tbody>
                             <tr>
                                 <td>Price:</td>
-                                <td>{listing.buyoutCurrencyValuePerToken.displayValue}{" "}{listing.buyoutCurrencyValuePerToken.symbol}</td>
+                                <td>
+                                    {listing.buyoutCurrencyValuePerToken.displayValue}{" "}
+                                    {listing.buyoutCurrencyValuePerToken.symbol}
+                                </td>
                             </tr>
                             <tr>
                                 <td>Asset Description:</td>
@@ -91,25 +98,32 @@ const ListingPage = () => {
                             </tr>
                             <tr>
                                 <td>Listing Type:</td>
-                                <td>{listing.type === ListingType.Direct ? "Direct Listing" : "Auction Listing"}</td>
+                                <td>
+                                    {listing.type === ListingType.Direct
+                                        ? "Direct Listing"
+                                        : "Auction Listing"}
+                                </td>
                             </tr>
                             </tbody>
                         </table>
-                        <p>
-
-                        </p>
-                        <button
-                            className={styles["listing-buy-button-large"]}
-                            onClick={() => {
-                                if (listing.type === ListingType.Direct) {
-                                    buyNft(listing.id, 1);
-                                } else {
-                                    createBidOrOffer();
-                                }
-                            }}
-                        >
-                            {listing.type === ListingType.Direct ? "Buy Now" : "Bid Now"}
-                        </button>
+                        {isLoggedIn ? (
+                            <button
+                                className={styles["listing-buy-button-large"]}
+                                onClick={() => {
+                                    if (listing.type === ListingType.Direct) {
+                                        buyNft(listing.id, 1);
+                                    } else {
+                                        createBidOrOffer();
+                                    }
+                                }}
+                            >
+                                {listing.type === ListingType.Direct ? "Buy Now" : "Bid Now"}
+                            </button>
+                        ) : (
+                            <div className={styles["listing-signin-container"]}>
+                                <SignIn />
+                            </div>
+                        )}
                     </div>
                 </div>
             ) : (
