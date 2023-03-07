@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     useContract
 } from "@thirdweb-dev/react";
 import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
-import { useAccount } from "@thirdweb-dev/react";
+import { useAccount, useUser } from "@thirdweb-dev/react"; // import useUser hook
 import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
@@ -16,6 +16,7 @@ const Create = () => {
     );
     const [account] = useAccount();
     const { address: accountAddress } = account?.data || {};
+    const { user, isLoggedIn } = useUser(); // get the logged-in status from the useUser hook
     const breadcrumbs = [
         { label: "Home", path: "/" },
         { label: "Sell", path: "/create" }
@@ -50,7 +51,7 @@ const Create = () => {
                 <Breadcrumbs crumbs={breadcrumbs} />
             </div>
             <div>
-                <CreateListing/>
+                <CreateListing isLoggedIn={isLoggedIn} />
             </div>
         </div>
     );

@@ -33,8 +33,13 @@ const customTheme = createTheme({
     },
 });
 
-
-export const FormInputText = ({ name, control, label, sx}: FormInputProps & { sx?: SxProps }) => {
+export const FormInputText = ({
+                                  name,
+                                  control,
+                                  label,
+                                  sx,
+                                  ...props // spread the `props` object
+                              }: FormInputProps & { sx?: SxProps }) => {
     return (
         <Controller
             name={name}
@@ -45,19 +50,20 @@ export const FormInputText = ({ name, control, label, sx}: FormInputProps & { sx
                          formState,
                      }) => (
                 <ThemeProvider theme={customTheme}>
-                <TextField
-                    helperText={error ? error.message : null}
-                    size="small"
-                    error={!!error}
-                    onChange={onChange}
-                    value={value}
-                    fullWidth
-                    label={label}
-                    variant="outlined"
-                    color="primary"
-                    style={{color: "#fff"}}
-                    sx={sx} // add `sx` to the `TextField` component
-                />
+                    <TextField
+                        helperText={error ? error.message : null}
+                        size="small"
+                        error={!!error}
+                        onChange={onChange}
+                        value={value}
+                        fullWidth
+                        label={label}
+                        variant="outlined"
+                        color="primary"
+                        style={{ color: "#fff" }}
+                        sx={sx}
+                        disabled={props.disabled}
+                    />
                 </ThemeProvider>
             )}
         />

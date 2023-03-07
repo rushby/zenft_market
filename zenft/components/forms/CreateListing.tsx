@@ -11,13 +11,17 @@ interface IFormInput {
     price: string;
 }
 
+interface IProps {
+    isLoggedIn: boolean;
+}
+
 const defaultValues = {
     contractAddress: "",
     tokenId: "",
     price: "",
 };
 
-export const CreateListing = () => {
+export const CreateListing = ({ isLoggedIn }: IProps) => {
     const { contract } = useContract(
         "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
         "marketplace"
@@ -77,26 +81,49 @@ export const CreateListing = () => {
     });
 
     return (
-        <Paper
-            style={{
-                display: "grid",
-                gridRowGap: "20px",
-                padding: "20px",
-                margin: "10px 300px",
-                backgroundColor: "#303030",
-                border: "2px solid #fff",
-            }}
-        >
-            <Typography variant="h6" style={{ color: "#fff" }}>Direct Listing</Typography>
+        <>
+            {!isLoggedIn && (
+                <Typography variant="h6" style={{ color: "#fff", textAlign: "center", margin: "20px" }}>
+                    Please sign in to create a listing.
+                </Typography>
+            )}
+            <Paper
+                style={{
+                    display: "grid",
+                    gridRowGap: "20px",
+                    padding: "20px",
+                    margin: "10px 300px",
+                    backgroundColor: "#303030",
+                    border: "2px solid #fff",
+                }}
+            >
+                <Typography variant="h6" style={{ color: "#fff" }}>Direct Listing</Typography>
 
-            <FormInputText name="contractAddress" control={control} label="Contract Address"/>
-            <FormInputText name="tokenId" control={control} label="Token Id" />
-            <FormInputText name="price" control={control} label="Price" />
+                <FormInputText
+                    name="contractAddress"
+                    control={control}
+                    label="Contract Address"
+                    disabled={!isLoggedIn}
+                />
+                <FormInputText
+                    name="tokenId"
+                    control={control}
+                    label="Token Id"
+                    disabled={!isLoggedIn}
+                />
+                <FormInputText
+                    name="price"
+                    control={control}
+                    label="Price"
+                    disabled={!isLoggedIn}
+                />
 
-            <Button onClick={handleSubmit(onSubmit)} variant={"contained"}>
-                {" "}
-                Submit{" "}
-            </Button>
-        </Paper>
+                <Button onClick={handleSubmit(onSubmit)} variant={"contained"} disabled={!isLoggedIn}>
+                    {" "}
+                    Submit{" "}
+                </Button>
+            </Paper>
+        </>
     );
+
 };
