@@ -5,7 +5,7 @@ import {
     useMetamask,
     useUser,
 } from "@thirdweb-dev/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "../styles/Header.module.css";
 
 const SignIn = () => {
@@ -48,6 +48,28 @@ const SignIn = () => {
     };
 
     const buttonText = buttonState === "failed" ? "Connect Failed" : "Connect and Sign In";
+
+    useEffect(() => {
+        const handleAccountsChanged = () => {
+            if (window.ethereum) {
+                window.ethereum.request({ method: "eth_accounts" }).then((accounts: string[]) => {
+                    if (accounts.length === 0) {
+                        logout();
+                    }
+                });
+            }
+        };
+
+        if (window.ethereum) {
+            (window as any).ethereum.on("accountsChanged", handleAccountsChanged);
+        }
+
+        return () => {
+            if (window.ethereum) {
+                (window as any).ethereum.removeListener("accountsChanged", handleAccountsChanged);
+            }
+        };
+    }, []);
 
     return (
         <>
