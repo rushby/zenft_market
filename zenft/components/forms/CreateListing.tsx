@@ -14,7 +14,7 @@ interface IFormInput {
 const defaultValues = {
     contractAddress: "",
     tokenId: "",
-    price: ""
+    price: "",
 };
 
 export const CreateListing = () => {
@@ -22,9 +22,17 @@ export const CreateListing = () => {
         "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
         "marketplace"
     );
-    const methods = useForm<IFormInput>({ defaultValues: defaultValues });
-    const { handleSubmit, register, control, setValue, formState: { errors } } = methods;
-
+    const methods = useForm<IFormInput>({
+        defaultValues: defaultValues,
+        mode: "onChange", // add mode property here
+    });
+    const {
+        handleSubmit,
+        register,
+        control,
+        setValue,
+        formState: { errors },
+    } = methods;
 
     const onSubmit = async (data: IFormInput) => {
         const { contractAddress, tokenId, price } = data;
@@ -46,7 +54,7 @@ export const CreateListing = () => {
     register("contractAddress", {
         required: "Contract Address is required",
         pattern: {
-            value: /^0x[a-fA-F0-9]{40}$/,
+            value: /^0x[a-fA-F0-9]{62}$/,
             message: "Invalid Contract Address",
         },
     });
@@ -54,7 +62,7 @@ export const CreateListing = () => {
     register("tokenId", {
         required: "Token Id is required",
         pattern: {
-            value: /^0x[a-fA-F0-9]{40}$/,
+            value: /^[0-9]*$/,
             message: "Token Id must be a number",
         },
     });
@@ -63,10 +71,10 @@ export const CreateListing = () => {
         required: "Price is required",
         pattern: {
             value: /^[0-9]+(\.[0-9]{1,18})?$/,
-            message: "Price must be a whole number or a decimal with up to 18 decimal places",
+            message:
+                "Price must be a whole number or a decimal with up to 18 decimal places",
         },
     });
-
 
     return (
         <Paper
@@ -75,11 +83,13 @@ export const CreateListing = () => {
                 gridRowGap: "20px",
                 padding: "20px",
                 margin: "10px 300px",
+                backgroundColor: "#303030",
+                border: "2px solid #fff",
             }}
         >
-            <Typography variant="h6">Direct Listing</Typography>
+            <Typography variant="h6" style={{ color: "#fff" }}>Direct Listing</Typography>
 
-            <FormInputText name="contractAddress" control={control} label="Contract Address" />
+            <FormInputText name="contractAddress" control={control} label="Contract Address"/>
             <FormInputText name="tokenId" control={control} label="Token Id" />
             <FormInputText name="price" control={control} label="Price" />
 
