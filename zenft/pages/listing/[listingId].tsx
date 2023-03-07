@@ -23,6 +23,7 @@ const ListingPage = () => {
     const { mutateAsync: buyNow } = useBuyNow(contract);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonState, setButtonState] = useState("normal");
+    const [buttonText, setButtonText] = useState("Buy Now");
     const breadcrumbs = [
         { label: "Home", path: "/" },
         { label: "Listings", path: "/listings" }
@@ -50,14 +51,15 @@ const ListingPage = () => {
         }
         {
             setButtonState("failed");
+            setButtonText("Failed");
             setTimeout(() => {
                 setButtonState("normal");
                 setErrorMessage("")
+                setButtonText("Buy Now");
             }, 5000);
         }
     }
-
-
+    
     return (
         <div>
             <Header />
@@ -112,9 +114,10 @@ const ListingPage = () => {
                                         })
                                     }
                                     className={`${styles.buy} ${styles[buttonState]}`}
+                                    isDisabled={buttonState === "failed"}
                                     onError={(error) => handleError(error.message)}
                                 >
-                                    Buy Now
+                                    {buttonText}
                                 </Web3Button>
                                 {errorMessage && <Typography variant="subtitle1" style={{ color: "orangered", margin: "0 0 20px", paddingTop: "2rem" }}>
                                     {errorMessage}
@@ -122,7 +125,7 @@ const ListingPage = () => {
                             </div>) : (
                             <div className={styles["listing-signin-container"]}>
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                    <Typography variant="h6" style={{ color: "orangered", margin: "0 0 20px" }}>
+                                    <Typography variant="subtitle1" style={{ color: "orangered", margin: "0 0 20px" }}>
                                         Must be signed in to buy...
                                     </Typography>
                                     <SignIn />
