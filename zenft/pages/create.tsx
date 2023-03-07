@@ -7,7 +7,7 @@ import { useAccount, useUser } from "@thirdweb-dev/react"; // import useUser hoo
 import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
-import {CreateListing} from "../components/forms/CreateListing";
+import {DirectListing} from "../components/forms/DirectListing";
 
 const Create = () => {
     const { contract } = useContract(
@@ -51,7 +51,7 @@ const Create = () => {
                 <Breadcrumbs crumbs={breadcrumbs} />
             </div>
             <div>
-                <CreateListing isLoggedIn={isLoggedIn} />
+                <DirectListing isLoggedIn={isLoggedIn} />
             </div>
         </div>
     );

@@ -21,7 +21,7 @@ const defaultValues = {
     price: "",
 };
 
-export const CreateListing = ({ isLoggedIn }: IProps) => {
+export const DirectListing = ({ isLoggedIn }: IProps) => {
     const { contract } = useContract(
         "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6",
         "marketplace"
