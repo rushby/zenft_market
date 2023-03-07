@@ -33,9 +33,7 @@
 .sell-label, .mint-label {
     font-size: 3rem;
     font-weight: bold;
-    background: linear-gradient(90deg, #0e9de5 -1.37%, rgba(14, 157, 229, 0)), #26db8d;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: white;
     padding: 0.5rem;
     margin-top: -2rem;
     margin-bottom: -1rem;

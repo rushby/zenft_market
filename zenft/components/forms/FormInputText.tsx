@@ -2,36 +2,9 @@ import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import { FormInputProps } from "./FormInputProps";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { SxProps } from "@mui/system";
-
-const customTheme = createTheme({
-    components: {
-        MuiTextField: {
-            styleOverrides: {
-                root: {
-                    "& .MuiInputLabel-root": {color: 'white'}, //styles the label
-                    "& .MuiInputBase-input": {
-                        color: "white", //styles the input text
-                    },
-                    "& .MuiOutlinedInput-root": {
-                        "& > fieldset": { borderColor: "#0e9de5" },
-                    },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                        "& > fieldset": {
-                            borderColor: "#26db8d"
-                        }
-                    },
-                    "& .MuiOutlinedInput-root:hover": {
-                        "& > fieldset": {
-                            borderColor: "#26db8d"
-                        }
-                    },
-                },
-            },
-        },
-    },
-});
+import { customTheme } from "../../themes/formTheme"
 
 export const FormInputText = ({
                                   name,
