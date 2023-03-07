@@ -1,10 +1,9 @@
-import { useAddress, useLogout, useUser } from "@thirdweb-dev/react";
+import { useAddress, useUser } from "@thirdweb-dev/react";
 import styles from "../styles/Header.module.css";
 import SignIn from "./SignIn";
 
 const Header = () => {
     const address = useAddress();
-    const { logout } = useLogout();
     const { isLoggedIn } = useUser();
 
     return (

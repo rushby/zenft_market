@@ -55,18 +55,33 @@
     color: #fff;
 }
 
-.listing-buy-button {
-    display: block;
-    margin: auto;
-    margin-top: 0.5rem;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    background-color: #26db8d;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
+.buy {
+    display: block !important;
+    margin: auto !important;
+    margin-top: 2rem !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    cursor: pointer !important;
+    background-color: #26db8d !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 4px !important;
+}
+
+.error {
+    margin-top: 8px;
+    color: red;
+    font-size: 14px;
+}
+
+.normal {
+    background: linear-gradient(90deg, #0e9de5 -1.37%, rgba(14, 157, 229, 0)), #26db8d;
+}
+
+.failed {
+    background: linear-gradient(90deg, #0e9de5 -1.37%, rgba(14, 157, 229, 0)), #26db8d !important;
+    background-color: red !important;
 }
 
 .listing-page-h1 {

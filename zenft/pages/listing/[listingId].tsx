@@ -20,7 +20,9 @@ const ListingPage = () => {
         "marketplace"
     );
     const { isLoggedIn } = useUser();
-    const { mutateAsync: buyNow, isLoading, error } = useBuyNow(contract);
+    const { mutateAsync: buyNow } = useBuyNow(contract);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [buttonState, setButtonState] = useState("normal");
     const breadcrumbs = [
         { label: "Home", path: "/" },
         { label: "Listings", path: "/listings" }
@@ -39,6 +41,21 @@ const ListingPage = () => {
         }
         fetchListing();
     }, [contract, listingId]);
+
+    const handleError = (error: string) => {
+        if (error.includes('user rejected transaction')) {
+            setErrorMessage("User Rejected Transaction")
+        } else if (error.includes('without a reason string')) {
+            setErrorMessage("Transaction Failed: Check Wallet Funds")
+        }
+        {
+            setButtonState("failed");
+            setTimeout(() => {
+                setButtonState("normal");
+                setErrorMessage("")
+            }, 5000);
+        }
+    }
 
 
     return (
@@ -81,8 +98,9 @@ const ListingPage = () => {
                             </tr>
                             </tbody>
                         </table>
+
                         {isLoggedIn ? (
-                            <div>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                 <Web3Button
                                     contractAddress={contractAddress}
                                     action={() =>
@@ -93,9 +111,14 @@ const ListingPage = () => {
                                             buyForWallet: undefined, // Wallet to buy for, defaults to current wallet
                                         })
                                     }
+                                    className={`${styles.buy} ${styles[buttonState]}`}
+                                    onError={(error) => handleError(error.message)}
                                 >
                                     Buy Now
                                 </Web3Button>
+                                {errorMessage && <Typography variant="subtitle1" style={{ color: "orangered", margin: "0 0 20px", paddingTop: "2rem" }}>
+                                    {errorMessage}
+                                </Typography>}
                             </div>) : (
                             <div className={styles["listing-signin-container"]}>
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
