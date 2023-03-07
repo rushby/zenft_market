@@ -1,22 +1,26 @@
-import {Button, Card, Paper, Typography} from "@mui/material";
-import { FormProvider, useForm } from "react-hook-form";
+import { Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
 import { FormInputDropdown } from "./FormInputDropdown";
 import { customTheme } from "../../themes/formTheme";
 import { ThemeProvider } from "@mui/material/styles";
 
 const options = [
     {
-        label: "Dropdown Option 1",
-        value: "1",
+        label: "Direct",
+        value: "direct",
     },
     {
-        label: "Dropdown Option 2",
-        value: "2",
+        label: "Auction",
+        value: "auction",
     },
 ];
 
 export const ListingType = () => {
-    const methods = useForm();
+    const methods = useForm({
+        defaultValues: {
+            listingType: "direct" // Set default value to the second option
+        }
+    });
     const { control } = methods;
 
     return (
