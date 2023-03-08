@@ -8,7 +8,7 @@ import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
 import {DirectListing} from "../components/forms/DirectListing";
-import {ListingType} from "../components/forms/ListingType";
+import {ListingTypeDropdown} from "../components/forms/ListingTypeDropdown";
 
 const Create = () => {
     const { contract } = useContract(
@@ -52,7 +52,7 @@ const Create = () => {
                 <Breadcrumbs crumbs={breadcrumbs} />
             </div>
             <>
-                <ListingType/>
+                <ListingTypeDropdown/>
             </>
             <div>
                 <DirectListing isLoggedIn={isLoggedIn} />

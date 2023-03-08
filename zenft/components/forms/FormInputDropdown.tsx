@@ -1,15 +1,21 @@
 import React from "react";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { useFormContext, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { FormInputProps } from "./FormInputProps";
+import { SxProps } from "@mui/system";
 
-export const FormInputDropdown:
-    React.FC<FormInputProps & {options: {label: string, value: string}[]}> = ({
-                                                                                  name,
-                                                                                  control,
-                                                                                  label,
-                                                                                  options
-                                                                              }) => {
+interface FormInputDropdownProps extends FormInputProps {
+    options: { label: string; value: string }[];
+    sx?: SxProps;
+}
+
+export const FormInputDropdown: React.FC<FormInputDropdownProps> = ({
+                                                                        name,
+                                                                        control,
+                                                                        label,
+                                                                        options,
+                                                                        sx,
+                                                                    }) => {
     const generateSingleOptions = () => {
         return options.map((option: any) => {
             return (
@@ -21,7 +27,7 @@ export const FormInputDropdown:
     };
 
     return (
-        <FormControl size={"small"}>
+        <FormControl size={"small"} sx={sx}>
             {label && <InputLabel>{label}</InputLabel>}
             <Controller
                 render={({ field: { onChange, value } }) => (

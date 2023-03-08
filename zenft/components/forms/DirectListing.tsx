@@ -81,12 +81,8 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
     });
 
     return (
+        <div style={{ paddingTop: "1rem" }}>
         <>
-            {!isLoggedIn && (
-                <Typography variant="h6" style={{ color: "#fff", textAlign: "center", margin: "20px" }}>
-                    Please sign in to create a listing.
-                </Typography>
-            )}
             <Paper
                 style={{
                     display: "grid",
@@ -94,7 +90,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
                     padding: "20px",
                     margin: "10px 300px",
                     backgroundColor: "#303030",
-                    border: "2px solid #fff",
+                    border: "2px solid #fff"
                 }}
             >
                 <Typography variant="h6" style={{ color: "#fff" }}>Direct Listing</Typography>
@@ -124,6 +120,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
                 </Button>
             </Paper>
         </>
+        </div>
     );
 
 };
