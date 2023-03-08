@@ -1,14 +1,15 @@
 import { useRouter } from "next/router";
-import styles from "../styles/Listing.module.css";
+import styles from "../../styles/Listing.module.css";
 import React from "react";
 import Link from "next/link";
 import { MediaRenderer, useActiveListings, useContract } from "@thirdweb-dev/react";
 import { ListingType } from "@thirdweb-dev/sdk";
 
+import { useListings } from "./ListingsContext";
+
 const Listings = () => {
     const router = useRouter();
-    const { contract } = useContract("0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6", "marketplace");
-    const { data: listings, isLoading: loadingListings } = useActiveListings(contract);
+    const { listings, loadingListings } = useListings();
 
     return (
         <div>
@@ -53,3 +54,4 @@ const Listings = () => {
 };
 
 export default Listings;
+

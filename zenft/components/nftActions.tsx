@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "../styles/NftActions.module.css";
 import { useRouter } from "next/router";
-import Listings from "./listings";
+import Listings from "./listings/listings";
+import {ListingsProvider} from "./listings/ListingsContext";
 
 const NftActions = () => {
     const router = useRouter();
@@ -27,7 +28,9 @@ const NftActions = () => {
                 </div>
             </div>
             <div>
-                <Listings/>
+                <ListingsProvider>
+                    <Listings/>
+                </ListingsProvider>
             </div>
         </div>
 
