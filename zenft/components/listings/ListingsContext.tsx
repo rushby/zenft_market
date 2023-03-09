@@ -28,19 +28,27 @@ export const ListingsProvider = ({ children }: ListingsProviderProps) => {
     const { data: activeListings, isLoading: loadingActiveListings } = useActiveListings(contract);
 
     const fetchListings = async () => {
-        const { data } = await useActiveListings(contract);
-        if (data) {
-            setListings(data);
+        if (contract) {
+            const data = await contract.getActiveListings();
+            if (data) {
+                setListings(data);
+                localStorage.setItem('listings', JSON.stringify(data));
+            }
         }
     };
 
+    //Updates the listings data when the activeListings value changes.
+    //This ensures that the component is updated with the latest listings data whenever it becomes available.
     useEffect(() => {
         if (activeListings) {
             setListings(activeListings);
             setLoadingListings(false);
+            localStorage.setItem('listings', JSON.stringify(activeListings));
         }
     }, [activeListings]);
 
+    //Updates the listings data every 60 seconds using the fetchListings function.
+    //This ensures that the listings data is updated periodically, even if no new listings become available.
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchListings();
@@ -49,6 +57,15 @@ export const ListingsProvider = ({ children }: ListingsProviderProps) => {
         return () => clearInterval(intervalId);
     }, [fetchListings]);
 
+    //Reads the listings data from local storage when the component mounts.
+    // This ensures that the component always has access to the most recent listings data, even after a browser refresh.
+    useEffect(() => {
+        const storedListings = localStorage.getItem('listings');
+        if (storedListings) {
+            setListings(JSON.parse(storedListings));
+            setLoadingListings(false);
+        }
+    }, []);
 
 
     return (
