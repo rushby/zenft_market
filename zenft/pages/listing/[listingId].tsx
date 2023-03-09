@@ -93,22 +93,32 @@ const ListingPage = () => {
                         <table className={styles["listing-details"]}>
                             <tbody>
                             <tr>
-                                <td>Price:</td>
+                                <td>Price</td>
                                 <td>
                                     {listing.buyoutCurrencyValuePerToken.displayValue}{" "}
                                     {listing.buyoutCurrencyValuePerToken.symbol}
                                 </td>
                             </tr>
                             <tr>
-                                <td>Asset Description:</td>
+                                <td>Token Id</td>
+                                <td>
+                                    {listing.id}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Asset Description</td>
                                 <td>{listing.asset.description}</td>
                             </tr>
                             <tr>
-                                <td>Seller Address:</td>
+                                <td>Contract Address</td>
+                                <td>{listing.assetContractAddress}</td>
+                            </tr>
+                            <tr>
+                                <td>Seller Address</td>
                                 <td>{listing.sellerAddress}</td>
                             </tr>
                             <tr>
-                                <td>Listing Type:</td>
+                                <td>Listing Type</td>
                                 <td>
                                     {listing.type === ListingType.Direct
                                         ? "Direct Listing"
