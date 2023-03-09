@@ -30,17 +30,23 @@ const ListingPage = () => {
     ];
 
     useEffect(() => {
-        async function fetchListing() {
-            const activeListings = await contract?.getActiveListings();
-            const matchingListing = activeListings?.find(
-                (listing) => listing.id === listingId
-            );
-
+        const storedListings = localStorage.getItem('listings');
+        if (storedListings) {
+            const listings = JSON.parse(storedListings);
+            const matchingListing = listings.find((listing: { id: string }) => listing.id === listingId);
             if (matchingListing) {
                 setListing(matchingListing);
             }
+        } else {
+            const fetchListing = async () => {
+                const activeListings = await contract?.getActiveListings();
+                const matchingListing = activeListings?.find(listing => listing.id === listingId);
+                if (matchingListing) {
+                    setListing(matchingListing);
+                }
+            };
+            fetchListing();
         }
-        fetchListing();
     }, [contract, listingId]);
 
     const handleError = (error: string) => {
