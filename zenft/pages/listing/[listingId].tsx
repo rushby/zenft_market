@@ -66,6 +66,17 @@ const ListingPage = () => {
         }
     }
 
+    //TODO: Implement logic for removing a listing from local storage once sold
+    //Consider just calling active listings again rather than doing this...
+    const removeListing = (id: string) => {
+        const storedListings = localStorage.getItem('listings');
+        if (storedListings) {
+            const listings = JSON.parse(storedListings);
+            const updatedListings = listings.filter((listing: { id: string; }) => listing.id !== id);
+            localStorage.setItem('listings', JSON.stringify(updatedListings));
+        }
+    };
+
     return (
         <div>
             <Header />
