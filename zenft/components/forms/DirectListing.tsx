@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Button, Paper, Typography } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
+    useAddress,
+    useOwnedNFTs,
     useCreateDirectListing,
     useContract,
-    Web3Button,
+    Web3Button
 } from "@thirdweb-dev/react";
-import { ListingType, NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
+import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { FormInputText } from "./FormInputText";
 import styles from "../../styles/Listing.module.css";
 import SignIn from "../SignIn";
@@ -29,7 +31,10 @@ const defaultValues = {
 
 export const DirectListing = ({ isLoggedIn }: IProps) => {
     const contractAddress = "0x5C075ef16255BF7a7F0c49A0a2f5c2BB325cd2f6";
-    const {contract} = useContract(contractAddress, "marketplace");
+    const {contract} = useContract(
+        contractAddress,
+        "marketplace"
+    );
     const {mutateAsync: createDirectListing} = useCreateDirectListing(contract);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonState, setButtonState] = useState("normal");
@@ -37,7 +42,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
 
     const methods = useForm<IFormInput>({
         defaultValues: defaultValues,
-        mode: "onChange", // add mode property here
+        mode: "onChange",
     });
     const {
         handleSubmit,
@@ -89,89 +94,164 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
         },
     });
 
-    return (
-        <div style={{paddingTop: "1rem"}}>
-            <>
-                <Paper
-                    style={{
-                        display: "grid",
-                        gridRowGap: "20px",
-                        padding: "20px",
-                        margin: "10px 300px",
-                        backgroundColor: "#303030",
-                        border: "2px solid #fff"
-                    }}
-                >
-                    <Typography variant="h6" style={{color: "#fff"}}>Direct Listing</Typography>
+    const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+        console.log("hello");
+        const address = useAddress();
+        const contractAddress = data.contractAddress;
+        const { contract } = useContract(contractAddress);
+        const { data: ownedNFTs, isLoading, error } = useOwnedNFTs(
+            contract,
+            address,
+        );
 
-                    <FormInputText
-                        name="contractAddress"
-                        control={control}
-                        label="Contract Address"
-                        disabled={!isLoggedIn}
-                    />
-                    <FormInputText
-                        name="tokenId"
-                        control={control}
-                        label="Token Id"
-                        disabled={!isLoggedIn}
-                    />
-                    <FormInputText
-                        name="price"
-                        control={control}
-                        label="Price"
-                        disabled={!isLoggedIn}
-                    />
+        // Check if the user owns the NFT with the provided tokenId
+        const ownsNFT = ownedNFTs?.some((nft) => nft.metadata.id === data.tokenId) ?? false;
 
-                    {isLoggedIn ? (
-                        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                            <Web3Button
-                                contractAddress={contractAddress}
-                                action={async () => {
-                                    try {
-                                        await handleSubmit((data: IFormInput) =>
-                                            createDirectListing({
-                                                assetContractAddress: data.contractAddress,
-                                                buyoutPricePerToken: data.price,
-                                                currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-                                                listingDurationInSeconds: 60 * 60 * 24 * 7,
-                                                quantity: 1,
-                                                startTimestamp: new Date(0),
-                                                tokenId: parseInt(data.tokenId),
-                                            })
-                                        )();
-                                    } catch (error) {
-                                        console.error(error);
-                                    }
+
+        if (isLoading) {
+            setErrorMessage("Checking ownership...");
+            setButtonState("loading");
+            setButtonText("Checking Ownership...");
+            return;
+        }
+
+        if (!ownsNFT) {
+            setErrorMessage("You do not own this NFT.");
+            setButtonState("failed");
+            setButtonText("Not Owned");
+            setTimeout(() => {
+                setButtonState("normal");
+                setButtonText("Create Listing");
+            }, 5000);
+            return;
+        }
+
+        try {
+            await createDirectListing({
+                assetContractAddress: data.contractAddress,
+                buyoutPricePerToken: data.price,
+                currencyContractAddress: NATIVE_TOKEN_ADDRESS,
+                listingDurationInSeconds: 60 * 60 * 24 * 7,
+                quantity: 1,
+                startTimestamp: new Date(0),
+                tokenId: parseInt(data.tokenId),
+            });
+            setErrorMessage("");
+            setButtonState("success");
+            setButtonText("Success");
+            setTimeout(() => {
+                setButtonState("normal");
+                setButtonText("Create Listing");
+            }, 5000);
+        } catch (error: any) {
+            console.error(error);
+            if (error.message.includes("user rejected transaction")) {
+                setErrorMessage("User Rejected Transaction");
+            } else if (error.message.includes("without a reason string")) {
+                setErrorMessage("Transaction Failed: Check Wallet Funds");
+            } else {
+                setErrorMessage("");
+            }
+            setButtonState("failed");
+            setButtonText("Failed");
+            setTimeout(() => {
+                setButtonState("normal");
+                setButtonText("Create Listing");
+            }, 5000);
+        }
+    };
+
+
+        return (
+            <div style={{paddingTop: "1rem"}}>
+                <>
+                    <Paper
+                        style={{
+                            display: "grid",
+                            gridRowGap: "20px",
+                            padding: "20px",
+                            margin: "10px 300px",
+                            backgroundColor: "#303030",
+                            border: "2px solid #fff",
+                        }}
+                    >
+                        <Typography variant="h6" style={{color: "#fff"}}>
+                            Direct Listing
+                        </Typography>
+
+                        <FormInputText
+                            name="contractAddress"
+                            control={control}
+                            label="Contract Address"
+                            disabled={!isLoggedIn}
+                        />
+                        <FormInputText
+                            name="tokenId"
+                            control={control}
+                            label="Token Id"
+                            disabled={!isLoggedIn}
+                        />
+                        <FormInputText
+                            name="price"
+                            control={control}
+                            label="Price"
+                            disabled={!isLoggedIn}
+                        />
+
+                        {isLoggedIn ? (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
                                 }}
-                                className={`${styles.buy} ${styles[buttonState]}`}
-                                isDisabled={buttonState === "failed"}
-                                onError={(error) => handleError(error.message)}
                             >
-                                {buttonText}
-                            </Web3Button>
+                                <Web3Button
+                                    contractAddress={contractAddress}
+                                    action={() => handleSubmit(onSubmit)()}
+                                    className={`${styles.buy} ${styles[buttonState]}`}
+                                    isDisabled={buttonState === "failed"}
+                                    onError={(error) => handleError(error.message)}
+                                >
+                                    {buttonText}
+                                </Web3Button>
 
-                            {errorMessage && <Typography variant="subtitle1" style={{
-                                color: "orangered",
-                                margin: "0 0 20px",
-                                paddingTop: "2rem"
-                            }}>
-                                {errorMessage}
-                            </Typography>}
-                        </div>) : (
-                        <div className={styles["listing-signin-container"]}>
-                            <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                <Typography variant="subtitle1" style={{color: "orangered", margin: "0 0 20px"}}>
-                                    Must be signed in to buy...
-                                </Typography>
-                                <SignIn/>
+                                {errorMessage && (
+                                    <Typography
+                                        variant="subtitle1"
+                                        style={{
+                                            color: "orangered",
+                                            margin: "0 0 20px",
+                                            paddingTop: "2rem",
+                                        }}
+                                    >
+                                        {errorMessage}
+                                    </Typography>
+                                )}
                             </div>
-                        </div>
-                    )}
-                </Paper>
-            </>
-        </div>
-    );
-}
+                        ) : (
+                            <div className={styles["listing-signin-container"]}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Typography
+                                        variant="subtitle1"
+                                        style={{color: "orangered", margin: "0 0 20px"}}
+                                    >
+                                        Must be signed in to buy...
+                                    </Typography>
+                                    <SignIn/>
+                                </div>
+                            </div>
+                        )}
+                    </Paper>
+                </>
+            </div>
+        );
+};
 
 export default DirectListing;
