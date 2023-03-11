@@ -7,7 +7,7 @@ import { useAccount, useUser } from "@thirdweb-dev/react"; // import useUser hoo
 import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
-import {DirectListing} from "../components/forms/DirectListing";
+import {DirectListing} from "../components/forms/directListing/DirectListing";
 import {ListingTypeDropdown} from "../components/forms/ListingTypeDropdown";
 
 const Create = () => {
