@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Paper, Typography } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
-    useAddress,
-    useOwnedNFTs,
     useCreateDirectListing,
     useContract,
     Web3Button
@@ -52,11 +50,15 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
         formState: {errors},
     } = methods;
 
-    const handleError = (error: string) => {
-        if (error.includes("user rejected transaction")) {
+    const handleError = (error: Error) => {
+        if (error.message.includes("user rejected transaction")) {
             setErrorMessage("User Rejected Transaction");
-        } else if (error.includes("without a reason string")) {
+        } else if (error.message.includes("without a reason string")) {
             setErrorMessage("Transaction Failed: Check Wallet Funds");
+        } else if (error.message.includes("invalid token ID")) {
+            setErrorMessage("Token Id is invalid");
+        } else if (error.message.includes("")) {
+            setErrorMessage("You do not own this NFT.");
         } else {
             setErrorMessage("");
         }
@@ -95,37 +97,6 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
     });
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-        console.log("hello");
-        const address = useAddress();
-        const contractAddress = data.contractAddress;
-        const { contract } = useContract(contractAddress);
-        const { data: ownedNFTs, isLoading, error } = useOwnedNFTs(
-            contract,
-            address,
-        );
-
-        // Check if the user owns the NFT with the provided tokenId
-        const ownsNFT = ownedNFTs?.some((nft) => nft.metadata.id === data.tokenId) ?? false;
-
-
-        if (isLoading) {
-            setErrorMessage("Checking ownership...");
-            setButtonState("loading");
-            setButtonText("Checking Ownership...");
-            return;
-        }
-
-        if (!ownsNFT) {
-            setErrorMessage("You do not own this NFT.");
-            setButtonState("failed");
-            setButtonText("Not Owned");
-            setTimeout(() => {
-                setButtonState("normal");
-                setButtonText("Create Listing");
-            }, 5000);
-            return;
-        }
-
         try {
             await createDirectListing({
                 assetContractAddress: data.contractAddress,
@@ -145,22 +116,9 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
             }, 5000);
         } catch (error: any) {
             console.error(error);
-            if (error.message.includes("user rejected transaction")) {
-                setErrorMessage("User Rejected Transaction");
-            } else if (error.message.includes("without a reason string")) {
-                setErrorMessage("Transaction Failed: Check Wallet Funds");
-            } else {
-                setErrorMessage("");
-            }
-            setButtonState("failed");
-            setButtonText("Failed");
-            setTimeout(() => {
-                setButtonState("normal");
-                setButtonText("Create Listing");
-            }, 5000);
+            handleError(error);
         }
     };
-
 
         return (
             <div style={{paddingTop: "1rem"}}>
@@ -211,7 +169,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
                                     action={() => handleSubmit(onSubmit)()}
                                     className={`${styles.buy} ${styles[buttonState]}`}
                                     isDisabled={buttonState === "failed"}
-                                    onError={(error) => handleError(error.message)}
+                                    onError={(error) => handleError(error)}
                                 >
                                     {buttonText}
                                 </Web3Button>
