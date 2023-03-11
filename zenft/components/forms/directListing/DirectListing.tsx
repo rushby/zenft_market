@@ -7,9 +7,10 @@ import {
     Web3Button
 } from "@thirdweb-dev/react";
 import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
-import { FormInputText } from "./FormInputText";
-import styles from "../../styles/Listing.module.css";
-import SignIn from "../SignIn";
+import { FormInputText } from "../FormInputText";
+import styles from "../../../styles/Listing.module.css";
+import SignIn from "../../SignIn";
+import validationRules from "./formValidation";
 
 interface IFormInput {
     contractAddress: string;
@@ -73,43 +74,10 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
         }, 5000);
     };
 
-    register("contractAddress", {
-        required: "Contract Address is required",
-        pattern: {
-            value: /^0x[a-fA-F0-9]{40}$/,
-            message: "Invalid Contract Address",
-        },
-    });
-
-    register("tokenId", {
-        required: "Token Id is required",
-        pattern: {
-            value: /^[0-9]*$/,
-            message: "Token Id must be a number",
-        },
-    });
-
-    register("price", {
-        required: "Price is required",
-        pattern: {
-            value: /^[0-9]+(\.[0-9]{1,18})?$/,
-            message:
-                "Price must be a whole number or a decimal with up to 18 decimal places",
-        },
-    });
-
-    register("duration", {
-        required: "Duration is required",
-        valueAsNumber: true,
-        min: {
-            value: 1,
-            message: "Duration must be at least 1 day",
-        },
-        max: {
-            value: 365,
-            message: "Duration cannot be more than 1 year",
-        },
-    });
+    register("contractAddress", validationRules.contractAddress);
+    register("tokenId", validationRules.tokenId);
+    register("price", validationRules.price);
+    register("duration", validationRules.duration);
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         try {
