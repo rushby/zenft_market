@@ -15,6 +15,7 @@ interface IFormInput {
     contractAddress: string;
     tokenId: string;
     price: string;
+    duration: string;
 }
 
 interface IProps {
@@ -25,6 +26,7 @@ const defaultValues = {
     contractAddress: "",
     tokenId: "",
     price: "",
+    duration: "",
 };
 
 export const DirectListing = ({ isLoggedIn }: IProps) => {
@@ -96,17 +98,34 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
         },
     });
 
+    register("duration", {
+        required: "Duration is required",
+        valueAsNumber: true,
+        min: {
+            value: 1,
+            message: "Duration must be at least 1 day",
+        },
+        max: {
+            value: 365,
+            message: "Duration cannot be more than 1 year",
+        },
+    });
+
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         try {
-            await createDirectListing({
+            const requestData = {
                 assetContractAddress: data.contractAddress,
                 buyoutPricePerToken: data.price,
                 currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-                listingDurationInSeconds: 60 * 60 * 24 * 7,
                 quantity: 1,
                 startTimestamp: new Date(0),
-                tokenId: parseInt(data.tokenId),
-            });
+                listingDurationInSeconds: Number(data.duration) * 60 * 60 * 24,
+                tokenId: parseInt(data.tokenId)
+            }
+
+
+            await createDirectListing(requestData);
+
             setErrorMessage("");
             setButtonState("success");
             setButtonText("Success");
@@ -153,6 +172,12 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
                             name="price"
                             control={control}
                             label="Price"
+                            disabled={!isLoggedIn}
+                        />
+                        <FormInputText
+                            name="duration"
+                            control={control}
+                            label="Duration (days)"
                             disabled={!isLoggedIn}
                         />
 
