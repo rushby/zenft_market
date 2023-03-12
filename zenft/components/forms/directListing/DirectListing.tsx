@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import {
     useCreateDirectListing,
     useContract,
-    Web3Button
+    Web3Button, useOwnedNFTs, useAddress
 } from "@thirdweb-dev/react";
 import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { FormInputText } from "../FormInputText";
@@ -36,6 +36,10 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
         contractAddress,
         "marketplace"
     );
+    const address = useAddress();
+    const [nftContractAddress, setNftContractAddress] = useState("");
+    const { contract: nftContract } = useContract(nftContractAddress);
+    const { data: nftData, isLoading: nftLoading, error: nftError } = useOwnedNFTs(nftContract, address,);
     const {mutateAsync: createDirectListing} = useCreateDirectListing(contract);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonState, setButtonState] = useState("normal");
@@ -62,16 +66,15 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
             setErrorMessage("Token Id is invalid");
         } else if (error.message.includes("")) {
             setErrorMessage("You do not own this NFT.");
-        } else {
-            setErrorMessage("");
         }
 
         setButtonState("failed");
         setButtonText("Failed");
         setTimeout(() => {
+            setErrorMessage("");
             setButtonState("normal");
             setButtonText("Create Listing");
-        }, 5000);
+        }, 8000);
     };
 
     register("contractAddress", validationRules.contractAddress);
@@ -80,6 +83,22 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
     register("duration", validationRules.duration);
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+        setNftContractAddress(data.contractAddress);
+
+        const ownedNFTs = nftData?.map((nft) => nft.metadata.id) ?? [];
+
+        if (!ownedNFTs.includes(data.tokenId)) {
+            setErrorMessage("You do not own this NFT.");
+            setButtonState("failed");
+            setButtonText("Failed");
+            setTimeout(() => {
+                setErrorMessage("");
+                setButtonState("normal");
+                setButtonText("Create Listing");
+            }, 8000);
+            return;
+        }
+
         try {
             const requestData = {
                 assetContractAddress: data.contractAddress,
