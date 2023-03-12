@@ -6,6 +6,10 @@ import { ThemeProvider } from "@mui/material/styles";
 import React from "react";
 import { useUser } from "@thirdweb-dev/react";
 
+interface ListingTypeDropdownProps {
+    onListingTypeChange: (value: string) => void;
+}
+
 const options = [
     {
         label: "Direct",
@@ -17,7 +21,7 @@ const options = [
     },
 ];
 
-export const ListingTypeDropdown = () => {
+export const ListingTypeDropdown: React.FC<ListingTypeDropdownProps> = ({ onListingTypeChange }) => {
     const methods = useForm({
         defaultValues: {
             listingType: "direct" // Set default value to the second option
@@ -31,7 +35,7 @@ export const ListingTypeDropdown = () => {
             <Typography variant="h6"> Choose Listing Type </Typography>
             <div style={{ marginTop: "16px" }}>
                 <ThemeProvider theme={customTheme}>
-                    <FormInputDropdown name="listingType" control={control} options={options} sx={{ width: "250px" }} />
+                    <FormInputDropdown name="listingType" control={control} options={options} sx={{ width: "250px" }} onListingTypeChange={onListingTypeChange} />
                 </ThemeProvider>
                 {!isLoggedIn && (
                     <Typography variant="subtitle1" style={{ color: "orangered", paddingTop: "1rem" }}>

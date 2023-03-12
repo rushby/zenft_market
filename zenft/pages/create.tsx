@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     useContract
 } from "@thirdweb-dev/react";
 import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
-import { useAccount, useUser } from "@thirdweb-dev/react"; // import useUser hook
+import { useAccount, useUser } from "@thirdweb-dev/react";
 import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
-import {DirectListing} from "../components/forms/directListing/DirectListing";
-import {ListingTypeDropdown} from "../components/forms/ListingTypeDropdown";
+import { DirectListing } from "../components/forms/directListing/DirectListing";
+import { ListingTypeDropdown } from "../components/forms/ListingTypeDropdown";
+import AuctionListing from "../components/forms/auctionListing/AuctionListing";
 
 const Create = () => {
     const { contract } = useContract(
@@ -17,33 +18,18 @@ const Create = () => {
     );
     const [account] = useAccount();
     const { address: accountAddress } = account?.data || {};
-    const { user, isLoggedIn } = useUser(); // get the logged-in status from the useUser hook
+    const { user, isLoggedIn } = useUser();
+
     const breadcrumbs = [
         { label: "Home", path: "/" },
         { label: "Sell", path: "/create" }
     ];
 
-    const createAuctionListing = async (
-        contractAddress: string,
-        tokenId: string,
-        price: string
-    ) => {
-        try {
-            return await contract?.auction.createListing({
-                assetContractAddress: contractAddress,
-                buyoutPricePerToken: price,
-                currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-                listingDurationInSeconds: 60 * 60 * 24 * 7,
-                quantity: 1,
-                reservePricePerToken: 0,
-                startTimestamp: new Date(),
-                tokenId: parseInt(tokenId),
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    const [listingType, setListingType] = useState("direct");
 
+    const handleListingTypeChange = (value: string) => {
+        setListingType(value);
+    };
 
     return (
         <div>
@@ -51,11 +37,13 @@ const Create = () => {
                 <Header />
                 <Breadcrumbs crumbs={breadcrumbs} />
             </div>
-            <>
-                <ListingTypeDropdown/>
-            </>
+            <ListingTypeDropdown onListingTypeChange={handleListingTypeChange} />
             <div>
-                <DirectListing isLoggedIn={isLoggedIn} />
+                {listingType === "direct" ? (
+                    <DirectListing isLoggedIn={isLoggedIn} />
+                ) : (
+                    <AuctionListing isLoggedIn={isLoggedIn} />
+                )}
             </div>
         </div>
     );
