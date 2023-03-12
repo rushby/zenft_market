@@ -147,7 +147,7 @@ export const AuctionListing = ({ isLoggedIn }: IProps) => {
                         }}
                     >
                         <Typography variant="h6" style={{color: "#fff"}}>
-                            Direct Listing
+                            Auction Listing
                         </Typography>
 
                         <FormInputText
