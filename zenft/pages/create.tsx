@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import {
     useContract
 } from "@thirdweb-dev/react";
-import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { useAccount, useUser } from "@thirdweb-dev/react";
 import Header from "../components/header";
 import Breadcrumbs from "../components/breadcrumbs";
 import styles from "../styles/Listing.module.css";
-import { DirectListing } from "../components/forms/directListing/DirectListing";
+import { DirectListing } from "../components/forms/createListing/directListing/DirectListing";
 import { ListingTypeDropdown } from "../components/forms/ListingTypeDropdown";
-import AuctionListing from "../components/forms/auctionListing/AuctionListing";
+import AuctionListing from "../components/forms/createListing/auctionListing/AuctionListing";
 
 const Create = () => {
     const { contract } = useContract(

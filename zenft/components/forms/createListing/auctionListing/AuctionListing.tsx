@@ -6,20 +6,14 @@ import {
     useContract,
     Web3Button, useOwnedNFTs, useAddress
 } from "@thirdweb-dev/react";
-import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
-import { FormInputText } from "../FormInputText";
-import styles from "../../../styles/Listing.module.css";
-import SignIn from "../../SignIn";
-import validationRules from "./formValidation";
-import {handleError} from "./handleError";
 
-interface IFormInput {
-    contractAddress: string;
-    tokenId: string;
-    buyoutPricePerToken: string;
-    reservePricePerToken: string;
-    duration: string;
-}
+import { FormInputText } from "../../FormInputText";
+import styles from "../../../../styles/Listing.module.css";
+import SignIn from "../../../SignIn";
+import validationRules from "./formValidation";
+import { handleError } from "../handleError";
+import {handleAuctionSubmit} from "./auctionSubmit";
+import {IFormInput} from "./types";
 
 interface IProps {
     isLoggedIn: boolean;
@@ -78,40 +72,12 @@ export const AuctionListing = ({ isLoggedIn }: IProps) => {
             setTimeout(() => {
                 setErrorMessage("");
                 setButtonState("normal");
-                setButtonText("Create Auction");
+                setButtonText("Create Listing");
             }, 8000);
             return;
         }
 
-        try {
-            const requestData = {
-                assetContractAddress: data.contractAddress,
-                tokenId: data.tokenId,
-                minimumBidAmount: 0,
-                reservePricePerToken: data.reservePricePerToken,
-                buyoutPricePerToken: data.buyoutPricePerToken,
-                currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-                quantity: 1,
-                startTimestamp: new Date(0),
-                listingDurationInSeconds: Number(data.duration) * 24 * 60 * 60,
-                bidBufferBps: 100, // Bids must be 1% higher than current bid
-                timeBufferInSeconds: 300, // Extend auction by 5mins after receiving a bid
-            }
-
-
-            await createAuctionListing(requestData);
-
-            setErrorMessage("");
-            setButtonState("success");
-            setButtonText("Success");
-            setTimeout(() => {
-                setButtonState("normal");
-                setButtonText("Create Auction");
-            }, 5000);
-        } catch (error: any) {
-            console.error(error);
-            handleError(error, setButtonState,setButtonText,setErrorMessage);
-        }
+        await handleAuctionSubmit(data, createAuctionListing, setErrorMessage, setButtonState, setButtonText);
     };
 
         return (
