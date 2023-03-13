@@ -6,19 +6,13 @@ import {
     useContract,
     Web3Button, useOwnedNFTs, useAddress
 } from "@thirdweb-dev/react";
-import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { FormInputText } from "../../FormInputText";
 import styles from "../../../../styles/Listing.module.css";
 import SignIn from "../../../SignIn";
 import validationRules from "./formValidation";
 import { handleError } from "../handleError";
-
-interface IFormInput {
-    contractAddress: string;
-    tokenId: string;
-    price: string;
-    duration: string;
-}
+import { IFormInput } from "./types";
+import { handleDirectSubmit } from "./directSubmit";
 
 interface IProps {
     isLoggedIn: boolean;
@@ -80,31 +74,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
             return;
         }
 
-        try {
-            const requestData = {
-                assetContractAddress: data.contractAddress,
-                buyoutPricePerToken: data.price,
-                currencyContractAddress: NATIVE_TOKEN_ADDRESS,
-                quantity: 1,
-                startTimestamp: new Date(0),
-                listingDurationInSeconds: Number(data.duration) * 60 * 60 * 24,
-                tokenId: parseInt(data.tokenId)
-            }
-
-
-            await createDirectListing(requestData);
-
-            setErrorMessage("");
-            setButtonState("success");
-            setButtonText("Success");
-            setTimeout(() => {
-                setButtonState("normal");
-                setButtonText("Create Listing");
-            }, 5000);
-        } catch (error: any) {
-            console.error(error);
-            handleError(error, setButtonState, setButtonText, setErrorMessage);
-        }
+        await handleDirectSubmit(data, createDirectListing, setErrorMessage, setButtonState, setButtonText);
     };
 
         return (
