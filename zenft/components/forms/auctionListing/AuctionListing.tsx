@@ -11,6 +11,7 @@ import { FormInputText } from "../FormInputText";
 import styles from "../../../styles/Listing.module.css";
 import SignIn from "../../SignIn";
 import validationRules from "./formValidation";
+import {handleError} from "./handleError";
 
 interface IFormInput {
     contractAddress: string;
@@ -58,26 +59,6 @@ export const AuctionListing = ({ isLoggedIn }: IProps) => {
         setValue,
         formState: {errors},
     } = methods;
-
-    const handleError = (error: Error) => {
-        if (error.message.includes("user rejected transaction")) {
-            setErrorMessage("User Rejected Transaction");
-        } else if (error.message.includes("without a reason string")) {
-            setErrorMessage("Transaction Failed: Check Wallet Funds");
-        } else if (error.message.includes("invalid token ID")) {
-            setErrorMessage("Token Id is invalid");
-        } else if (error.message.includes("")) {
-            setErrorMessage("You do not own this NFT.");
-        }
-
-        setButtonState("failed");
-        setButtonText("Failed");
-        setTimeout(() => {
-            setErrorMessage("");
-            setButtonState("normal");
-            setButtonText("Create Listing");
-        }, 8000);
-    };
 
     register("contractAddress", validationRules.contractAddress);
     register("tokenId", validationRules.tokenId);
@@ -129,7 +110,7 @@ export const AuctionListing = ({ isLoggedIn }: IProps) => {
             }, 5000);
         } catch (error: any) {
             console.error(error);
-            handleError(error);
+            handleError(error, setButtonState,setButtonText,setErrorMessage);
         }
     };
 
@@ -194,7 +175,7 @@ export const AuctionListing = ({ isLoggedIn }: IProps) => {
                                     action={() => handleSubmit(onSubmit)()}
                                     className={`${styles.buy} ${styles[buttonState]}`}
                                     isDisabled={buttonState === "failed"}
-                                    onError={(error) => handleError(error)}
+                                    onError={(error) => handleError(error, setButtonState, setButtonText, setErrorMessage)}
                                 >
                                     {buttonText}
                                 </Web3Button>
