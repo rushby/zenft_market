@@ -71,24 +71,27 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
 
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-        setNftContractAddress(data.contractAddress);
+        const isValid = await trigger();
 
-        const ownedNFTs = nftData?.map((nft) => nft.metadata.id) ?? [];
+        if (isValid) {
+            const ownedNFTs = nftData?.map((nft) => nft.metadata.id) ?? [];
 
-        if (!ownedNFTs.includes(data.tokenId)) {
-            setErrorMessage("You do not own this NFT.");
-            setButtonState("failed");
-            setButtonText("Failed");
-            setTimeout(() => {
-                setErrorMessage("");
-                setButtonState("normal");
-                setButtonText("Create Listing");
-            }, 8000);
-            return;
+            if (!ownedNFTs.includes(data.tokenId)) {
+                setErrorMessage("You do not own this NFT.");
+                setButtonState("failed");
+                setButtonText("Failed");
+                setTimeout(() => {
+                    setErrorMessage("");
+                    setButtonState("normal");
+                    setButtonText("Create Listing");
+                }, 8000);
+                return;
+            }
+
+            await handleDirectSubmit(data, createDirectListing, setErrorMessage, setButtonState, setButtonText);
         }
-
-        await handleDirectSubmit(data, createDirectListing, setErrorMessage, setButtonState, setButtonText);
     };
+
 
         return (
             <div style={{paddingTop: "1rem"}}>
@@ -145,7 +148,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
                                     contractAddress={contractAddress}
                                     action={() => handleSubmit(onSubmit)()}
                                     className={`${styles.buy} ${styles[buttonState]}`}
-                                    isDisabled={!formState.isValid || buttonState === "failed" || buttonState === "loading" || buttonState === "success"}
+                                    disabled={!formState.isValid || buttonState === "failed" || buttonState === "loading" || buttonState === "success"}
                                     onError={(error) => handleError(error, setButtonState, setButtonText, setErrorMessage)}
                                 >
                                     {nftLoading || !nftData || nftData.length === 0 ? "Loading" : nftError ? "Failed" : buttonText}
