@@ -34,12 +34,11 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
     const address = useAddress();
     const [nftContractAddress, setNftContractAddress] = useState("");
     const { contract: nftContract } = useContract(nftContractAddress);
-    const { data: nftData, isLoading: nftLoading, error: nftError } = useOwnedNFTs(nftContract, address,);
+    const { data: nftData, isLoading: nftLoading, error: nftError } = useOwnedNFTs(nftContract, address);
     const {mutateAsync: createDirectListing} = useCreateDirectListing(contract);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonState, setButtonState] = useState("normal");
     const [buttonText, setButtonText] = useState("Create Listing");
-
     const methods = useForm<IFormInput>({
         defaultValues: defaultValues,
         mode: "onChange",
@@ -48,6 +47,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
         handleSubmit,
         register,
         control,
+        trigger,
         setValue,
         formState: {errors},
     } = methods;
@@ -56,6 +56,19 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
     register("tokenId", validationRules.tokenId);
     register("price", validationRules.price);
     register("duration", validationRules.duration);
+
+    const handleContractAddressChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        const fieldValue = e.target.value;
+        const isValid = await trigger("contractAddress");
+
+        if (isValid) {
+            setNftContractAddress(fieldValue);
+        } else {
+            setNftContractAddress("");
+        }
+        console.log(nftData);
+    };
+
 
     const onSubmit: SubmitHandler<IFormInput> = async (data) => {
         setNftContractAddress(data.contractAddress);
@@ -99,6 +112,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
                             control={control}
                             label="Contract Address"
                             disabled={!isLoggedIn}
+                            onChange={handleContractAddressChange}
                         />
                         <FormInputText
                             name="tokenId"
@@ -131,7 +145,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
                                     contractAddress={contractAddress}
                                     action={() => handleSubmit(onSubmit)()}
                                     className={`${styles.buy} ${styles[buttonState]}`}
-                                    isDisabled={buttonState === "failed"}
+                                    isDisabled={buttonState === "failed" || buttonState === "loading" || buttonState === "success"}
                                     onError={(error) => handleError(error, setButtonState, setButtonText, setErrorMessage)}
                                 >
                                     {buttonText}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import { FormInputProps } from "./FormInputProps";
 import { ThemeProvider } from "@mui/material/styles";
@@ -11,14 +11,15 @@ export const FormInputText = ({
                                   control,
                                   label,
                                   sx,
+                                  onChange, // Modify the type of onChange prop
                                   ...props // spread the `props` object
-                              }: FormInputProps & { sx?: SxProps }) => {
+                              }: FormInputProps & { sx?: SxProps, onChange?: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void }) => {
     return (
         <Controller
             name={name}
             control={control}
             render={({
-                         field: { onChange, value },
+                         field: { onChange: onChangeController, value },
                          fieldState: { error },
                          formState,
                      }) => (
@@ -27,7 +28,10 @@ export const FormInputText = ({
                         helperText={error ? error.message : null}
                         size="small"
                         error={!!error}
-                        onChange={onChange}
+                        onChange={(event) => {
+                            onChangeController(event);
+                            if (onChange) onChange(event); // Call the onChange prop if it exists
+                        }}
                         value={value}
                         fullWidth
                         label={label}
