@@ -34,7 +34,8 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
     const address = useAddress();
     const [nftContractAddress, setNftContractAddress] = useState("");
     const { contract: nftContract } = useContract(nftContractAddress);
-    const { data: nftData, isLoading: nftLoading, error: nftError } = useOwnedNFTs(nftContract, address);
+    const { data: nftData, isLoading: nftLoading, error: nftError } = useOwnedNFTs(
+        nftContractAddress ? nftContract : undefined, address);
     const {mutateAsync: createDirectListing} = useCreateDirectListing(contract);
     const [errorMessage, setErrorMessage] = useState("");
     const [buttonState, setButtonState] = useState("normal");
@@ -49,7 +50,7 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
         control,
         trigger,
         setValue,
-        formState: {errors},
+        formState
     } = methods;
 
     register("contractAddress", validationRules.contractAddress);
@@ -66,7 +67,6 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
         } else {
             setNftContractAddress("");
         }
-        console.log(nftData);
     };
 
 
@@ -145,10 +145,10 @@ export const DirectListing = ({ isLoggedIn }: IProps) => {
                                     contractAddress={contractAddress}
                                     action={() => handleSubmit(onSubmit)()}
                                     className={`${styles.buy} ${styles[buttonState]}`}
-                                    isDisabled={buttonState === "failed" || buttonState === "loading" || buttonState === "success"}
+                                    isDisabled={!formState.isValid || buttonState === "failed" || buttonState === "loading" || buttonState === "success"}
                                     onError={(error) => handleError(error, setButtonState, setButtonText, setErrorMessage)}
                                 >
-                                    {buttonText}
+                                    {nftLoading || !nftData || nftData.length === 0 ? "Loading" : nftError ? "Failed" : buttonText}
                                 </Web3Button>
 
                                 {errorMessage && (
